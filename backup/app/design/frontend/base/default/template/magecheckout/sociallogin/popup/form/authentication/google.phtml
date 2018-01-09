@@ -1,0 +1,34 @@
+<?php
+/**
+ * Magecheckout_SocialLogin extension
+ *                     NOTICE OF LICENSE
+ *
+ *                     This source file is subject to the MIT License
+ *                     that is bundled with this package in the file LICENSE.txt.
+ *                     It is also available through the world-wide-web at this URL:
+ *                     http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Magecheckout
+ * @package   Magecheckout_SocialLogin
+ * @copyright Copyright (c) 2015
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<?php if ($this->isEnabled()): ?>
+    <div class="actions-toolbar social-btn google-login">
+        <div class="primary">
+            <button class="action" id="btn_google_login" type="button">
+                <span>
+                    <span><?php echo __('Google Sign In') ?></span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <script>
+        var ggPopup = new SocialLoginPopup({
+            url: '<?php echo $this->getLoginUrl()?>',
+            title: '<?php echo $this->__('Login By Google')?>',
+            btnElement: 'btn_google_login'
+        });
+    </script>
+<?php endif; ?>

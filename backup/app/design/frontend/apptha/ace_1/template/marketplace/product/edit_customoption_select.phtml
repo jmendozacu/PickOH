@@ -1,0 +1,218 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Check the product custom options is equal to 1
+ */
+$select_sub_option_count = '';
+$optionCount = $selectSubOptionCount = 0;
+$option_count = '';
+
+/**
+ * Display product custom option, If it's exist
+ * Assign the option count, child option count
+ */
+
+$option_count = 1;
+$child_option_count_value = 1;
+$select_sub_option_count = 0;
+$product_options = array ();
+
+$o = $this->getSelectInfo ();
+
+$optionTitle = $optionTypeData = $optionIsRequire = $optionSortOrder = '';
+$optionIsRequire = $o->getIsRequire ();
+$optionSortOrder = $o->getSortOrder ();
+$optionTypeData = $o->getType ();
+$optionTitle = $o->getTitle ();
+
+$dropDown = $radio = $checkbox = $multiple = '';
+
+/**
+ * option type as dropdown.
+ */
+$optionTypeData == 'drop_down' ? $dropDown = 'selected' : '';
+/**
+ * option type as date time.
+ */
+$optionTypeData == 'date_time' ? $dateTime = 'selected' : '';
+
+/**
+ * Check option type is equal to drop down
+ * or option type is equal to radio
+ * or option type is equal to checkbox
+ * or option type is equal to multiple
+ * Get the values
+ */
+if ($optionTypeData == 'drop_down' || $optionTypeData == 'radio' || $optionTypeData == 'checkbox' || $optionTypeData == 'multiple') {
+    
+    $values = $o->getValues ();
+    ?>
+<!--<div id="<?php
+    $option_count_value = $option_count;
+    echo 'product_option_' . $option_count_value . '_type_select';
+    ?>" class="grid tier form-list">-->
+<table class="border form-list market_place_dropdown_row"
+ cellpadding="0" cellspacing="0">
+ <input type="hidden" class="required-option-select-type-rows"
+  name="<?php $option_count_value = $option_count; echo 'validation_' . $option_count_value . '_result'; ?>"
+  value="">
+ <thead>
+  <tr class="headings">
+   <th class="type-title"><label class="required"> <em>*</em> <?php echo $this->__('Title'); ?> </label>
+   </th>
+   <th class="type-price"><label><?php echo $this->__('Price'); ?></label></th>
+   <th class="type-type"><label><?php echo $this->__('Price Type'); ?></label></th>
+   <th class="type-sku"><label><?php echo $this->__('SKU'); ?></label></th>
+   <th class="type-order"><label><?php echo $this->__('Sort Order'); ?></label></th>
+   <th class="type-butt last">&nbsp;</th>
+  </tr>
+ </thead>
+ <tbody
+  id="<?php $optionCountValue = $option_count; echo 'select_option_type_row_' . $optionCountValue; ?>">
+<?php
+    /**
+     * Custom option collection.
+     */
+    foreach ( $values as $k => $v ) {
+        $optionSubTitle = $optionPrice = $optionPrice = $optionPriceTypeData = $optionSkuVar = $optionSortOrder = '';
+        $optionSubTitle = $v->getTitle ();
+        $optionPrice = round ( $v->getPrice (), 2 );
+        $optionPriceTypeData = $v->getPriceType ();
+        $optionSkuVar = $v->getSku ();
+        $optionSortOrder = $v->getSortOrder ();
+        ?>
+                        <tr
+   id="<?php
+        
+$optionCountValue = $option_count;
+        echo 'product_option_' . $optionCountValue . '_select_' . $select_sub_option_count;
+        ?>">
+   <td><input type="hidden"
+    name="<?php $optionCountValue = $option_count;  echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][option_type_id]';?>"
+    value="-1"> <input type="hidden"
+    id="<?php
+        
+$optionCountValue = $option_count;
+        echo 'product_option_' . $optionCountValue . '_select_' . $select_sub_option_count . '_is_delete';
+        ?>"
+    name="<?php
+        
+$optionCountValue = $option_count;
+        echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][is_delete]';
+        ?>"
+    value=""> <input type="text"
+    class="required-entry input-text select-type-title"
+    id="<?php
+        
+$optionCountValue = $option_count;
+        echo 'product_option_' . $optionCountValue . '_select_' . $select_sub_option_count . '_title';
+        ?>"
+    name="<?php
+        $optionCountValue = $option_count;
+        echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][title]';
+        ?>"
+    value="<?php echo $optionSubTitle; ?>"></td>
+   <td><input type="text"
+    class="input-text validate-number product-option-price"
+    id="<?php
+        $optionCountValue = $option_count;
+        echo 'product_option_' . $optionCountValue . '_select_' . $select_sub_option_count . '_price';
+        ?>"
+    name="<?php
+        $optionCountValue = $option_count;
+        echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][price]';
+        ?>"
+    value="<?php echo $optionPrice; ?>"></td>
+   <td><select
+    name="<?php
+        $optionCountValue = $option_count;
+        echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][price_type]';
+        ?>"
+    id="<?php
+        $optionCountValue = $option_count;
+        echo 'product_option_' . $optionCountValue . '_select_' . $select_sub_option_count . '_price_type';
+        ?>"
+    class="select product-option-price-type" title="">
+     <option value="fixed"
+      <?php if (isset ( $optionPriceTypeData ) && $optionPriceTypeData == 'fixed') {echo 'selected';}?>><?php echo $this->__('fixed'); ?></option>
+     <option value="percent"
+      <?php if (isset ( $optionPriceTypeData ) && $optionPriceTypeData == 'percent') {echo 'selected';}?>><?php echo $this->__('Percent'); ?></option>
+   </select></td>
+   <td><input type="text" class="input-text"
+    name="<?php
+        $optionCountValue = $option_count;
+        echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][sku]';
+        ?>"
+    value="<?php echo $optionSkuVar; ?>"></td>
+   <td><input type="text" class="validate-zero-or-greater input-text"
+    name="<?php
+        $optionCountValue = $option_count;
+        echo 'product[options][' . $optionCountValue . '][values][' . $select_sub_option_count . '][sort_order]';
+        ?>"
+    value="<?php echo $optionSortOrder; ?>"></td>
+   <td class="last"><span title="Delete row">
+     <button id="delete_select_row_button" title="Delete Row"
+      type="button"
+      class="button delete_select_row_button scalable delete delete-select-row icon-btn"
+      onclick="removeMarketPlaceChildSelectOption(this)" style="">
+      <span> <span><?php echo $this->__('Delete Row'); ?></span></span>
+     </button>
+   </span></td>
+  </tr>
+                    <?php
+        $select_sub_option_count = $select_sub_option_count + 1;
+    }
+    ?>
+                        </tbody>
+ <tfoot>
+  <tr>
+   <td colspan="100" class="a-right">
+    <button
+     id="<?php $option_count_value = $option_count; echo 'add_select_row_button_' . $option_count_value; ?>"
+     name="<?php $option_count_value = $option_count; echo 'select_option_type_row_' . $option_count_value; ?>"
+     title="<?php echo $this->__('Add New Row'); ?>" type="button"
+     class="button scalable add add-select-row"
+     onclick="addMarketPlaceChildSelectOption(this.name,<?php echo $option_count;  ?>)">
+     <span><span><?php
+    /**
+     * Display Option to add new row
+     */
+    echo $this->__ ( 'Add New Row'); ?></span></span>
+    </button>
+   </td>
+  </tr>
+ </tfoot>
+</table>
+<?php
+      $child_option_count_value = $child_option_count_value + 1;
+                    }
+
+                    $option_count = $option_count + 1;
+?>

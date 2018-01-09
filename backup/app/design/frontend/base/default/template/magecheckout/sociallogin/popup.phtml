@@ -1,0 +1,78 @@
+<?php if ($this->isEnabled()): ?>
+    <div id="social-login-popup" class="white-popup mfp-with-anim mfp-hide">
+        <?php echo $this->getChildHtml('popup.authentication') ?>
+        <?php echo $this->getChildHtml('popup.create') ?>
+        <?php echo $this->getChildHtml('popup.forgot') ?>
+    </div>
+    <div style="clear: both"></div>
+    <script>
+        var headerLink = '<?php echo $this->getHeaderLinkSelector()?>';
+        var customLinks = <?php echo Mage::helper('core')->jsonEncode($this->getCustomLinkSelector())?>;
+        var config = {
+            /*General*/
+            popup: '#social-login-popup',
+            popupEffect: '<?php echo $this->getPopupEffect()?>',
+            headerLink: headerLink,
+            customLinks: customLinks,
+            ajaxLoading: '#social-login-popup .ajax-loading',
+            /*Login*/
+            loginFormContainer: '.social-login.authentication',
+            loginFormContent: '.social-login.authentication .block-content',
+            loginForm: 'social-form-login',
+            loginBtn: '#bnt-social-login-authentication',
+            forgotBtn: '#social-form-login .action.remind',
+            createBtn: '#social-form-login .action.create',
+            formLoginUrl: '<?php echo $this->getFormLoginUrl();?>',
+            /*Forgot*/
+            forgotFormContainer: '.social-login.forgot',
+            forgotFormContent: '.social-login.forgot .block-content',
+            forgotForm: 'social-form-password-forget',
+            forgotSendBtn: '#social-form-password-forget .action.send',
+            forgotBackBtn: '#social-form-password-forget .action.back',
+            forgotFormUrl: '<?php echo $this->getForgotFormUrl();?>',
+            /*Create*/
+            createFormContainer: '.social-login.create',
+            createFormContent: '.social-login.create .block-content',
+            createForm: 'social-form-create',
+            createAccBtn: '#social-form-create .action.create',
+            createBackBtn: '#social-form-create .action.back',
+            createFormUrl: '<?php echo $this->getCreateFormUrl();?>',
+            /*Captcha*/
+            loginCaptchaImg: '.authentication .captcha-img',
+            createCaptchaImg: '.create .captcha-img',
+            forgotCaptchaImg: '.forgot .captcha-img'
+
+        };
+
+        new SocialLoginForm(config);
+        jQuery(function ($) {
+            if ($(headerLink).length) {
+                $(headerLink).magnificPopup({
+                    delegate: 'a.social-login',
+                    removalDelay: 500, //delay removal by X to allow out-animation
+                    callbacks: {
+                        beforeOpen: function () {
+                            this.st.mainClass = this.st.el.attr('data-effect');
+                            $('#header-account').removeClass('skip-active');
+                        }
+                    },
+                    midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+                });
+            }
+            customLinks.each(function (customLink) {
+                $(customLink).magnificPopup({
+                    delegate: 'a.social-login',
+                    removalDelay: 500, //delay removal by X to allow out-animation
+                    callbacks: {
+                        beforeOpen: function () {
+                            this.st.mainClass = this.st.el.attr('data-effect');
+                            $('#header-account').removeClass('skip-active');
+                        }
+                    },
+                    midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
+                });
+            })
+
+        })
+    </script>
+<?php endif; ?>

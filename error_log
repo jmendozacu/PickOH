@@ -1,0 +1,3 @@
+[07-Oct-2017 13:54:02 UTC] PHP Warning:  chmod(): No such file or directory in /home/pickoh/public_html/marketplace/magento-cleanup.php on line 45
+[10-Oct-2017 14:56:09 UTC] PHP Warning:  chmod(): No such file or directory in /home/pickoh/public_html/marketplace/magento-cleanup.php on line 45
+[14-Nov-2017 17:43:09 UTC] PHP Fatal error:  Call to a member function setCurPage() on null in /home/pickoh/public_html/marketplace/app/code/core/Mage/Page/Block/Html/Pager.php on line 140

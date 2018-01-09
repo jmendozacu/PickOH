@@ -1,0 +1,102 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+
+$orderId = $this->getRequest ()->getParam ( 'id' );
+$productId = $this->getRequest ()->getParam ( 'item' );
+$sellerId = Mage::getSingleton ( 'customer/session' )->getId ();
+    /**
+     * Get Product Info
+     * @var unknown
+     */
+        $getProduct = $this->getProductInformation($productId);
+        $getSellerDetails = $this->getSellerInformation($sellerId);
+        $getProductName = $getProduct->getName();
+        $currencySymbol = Mage::app ()->getLocale ()->currency ( Mage::app ()->getStore ()->getCurrentCurrencyCode () )->getSymbol ();
+        /**
+         * Add the comment and save the order (last parameter will determine if comment will be sent to customer)
+        */
+        $j = 0;
+        $order = $this->getOrderInformation($orderId);
+
+        $attributeLabel = $attributeValue = "";
+        /**
+         * Increment foreach loop
+         */
+        foreach($order->getAllItems() as $item)
+        {
+            if($item->getProductId () == $productId){
+                $orderPrice = $item->getPrice () * $item->getQtyOrdered ();
+                /**
+                 * Get the Product Amount
+                */
+                $productQty = $item->getQtyOrdered ();
+                $productAmt = $item->getPrice ();
+                $orderPrice = $productAmt * $productQty;
+                $productQty = round($item->getQtyOrdered ());
+                if($j == 0) {
+                    $options = $item->getProductOptions();
+                    $productTypeId = $getProduct->getTypeID();
+                    $customOptions = $options['attributes_info'];
+
+                    if($productTypeId == 'configurable'){
+                        $attributeLabel = $customOptions[0][label];
+                        $attributeValue = $customOptions[0][value];
+                        $j++;
+                    }
+                }
+            }
+        }
+        $displayLabel = '<dl class="item-options"><dt>'.$attributeLabel.'  </dt><dd>'.$attributeValue.'</dd>';
+        $order->addStatusHistoryComment();
+        $order->save();
+
+        /**
+         * Get order Id from order
+        */
+        $orderId = $order->getIncrementId();
+        $sellerName = $getSellerDetails->getFirstname();
+        $sellerEmail = $getSellerDetails->getEmail();
+        $displayProductQty = Mage::helper ( 'marketplace' )->__ ( 'Ordered QTY' );
+        $displayProductAmt = Mage::helper ( 'marketplace' )->__ ( 'Ordered Amount' );
+        $displayProductName = Mage::helper ( 'marketplace' )->__ ( 'Product Name' ); ?>
+        <table cellspacing="0" cellpadding="0" border="0" width="650" style="border:1px solid #eaeaea"><thead><tr>
+        <th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductName;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductQty;?></th>
+        <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductAmt;?></th>
+        </tr></thead>
+        <tbody bgcolor="#F6F6F6">
+        <tr>
+        <td align="left" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $getProductName .$displayLabel;?></td>
+                <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $productQty;?></td>
+        <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . $orderPrice;?></td>
+        </tr>
+        </tbody><tfoot></tfoot></table>
+

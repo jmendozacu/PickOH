@@ -1,0 +1,66 @@
+<?php
+
+$_collection=$this->getData('collection');
+$mainProduct=$this->getData('mainproduct');
+$product=$this->getData('product');
+
+if($product->getTypeId() == 'configurable'){
+$simple = $product->getTypeInstance()->getUsedProducts();
+$attributes = $product->getTypeInstance(true)->getConfigurableAttributes($product);
+}
+$formKey = Mage::getSingleton('core/session')->getFormKey();
+           
+            if($mainProduct->getTypeId() != 'configurable'){ 
+            $productStockObject=Mage::helper('marketplace/dashboard')->getStockObject($_collection->getId());
+            $productIsInStock = $productStockObject->getIsInStock ();
+            if($productIsInStock == 1){
+             ?>
+                                <button type="button" title="<?php echo Mage::helper('marketplace')->__('Add to Cart');
+                                 ?>" class="org_product_id assign_simple_product button btn-cart mp_addtocart_button" onclick="setLocation('<?php echo Mage::helper('checkout/cart')->getAddUrl($_collection); ?>');">
+                                    <span class="mp_addtocart"><?php echo Mage::helper('marketplace')->__('Add to Cart'); ?></span>
+                                </button>
+            <?php
+            }else{
+            ?>
+            <p class="availability out-of-stock"><?php echo $this->__('Out of Stock'); ?></p>
+            <?php   
+            }
+            }else{
+               
+ /**
+ * Loop through the products
+ */
+foreach ($simple as $sProduct){
+  
+    if($sProduct->isSaleable()){
+    /**
+     * Loop through the configurable attributes
+     */
+    $assignSimpleProductObject=Mage::helper('marketplace/marketplace')->getProductInfo($sProduct->getId());   
+    $assignSimpleProductId = $assignSimpleProductObject->getConfigAssignSimpleId();    
+    ?>
+    <form class="<?php echo "simple_id_$assignSimpleProductId"; ?> assign_simple_product" style="display: none;" action="<?php echo Mage::getUrl('checkout/cart/add/product/'.$_collection->getId()); ?>" method="get"> 
+    <input type="hidden" name="form_key" value="<?php echo $formKey; ?>" />    
+    <input type="hidden" name="qty" value="1"> 
+    <?php 
+    foreach ($attributes as $attribute){
+        /**
+         * Get the value for a specific attribute for a simple product
+         */
+        $attributeId = $attribute->getProductAttribute()->getAttributeId();
+        $optionValue = $sProduct->getData($attribute->getProductAttribute()->getAttributeCode());
+    ?>
+    <input type="hidden" name="super_attribute[<?php echo $attributeId; ?>]" value="<?php echo $optionValue; ?>"> 
+    <?php } ?>    
+    <input class="button btn-cart mp_addtocart_button" type="submit" title="<?php echo Mage::helper('marketplace')->__('Add to Cart'); ?>" value="<?php echo Mage::helper('marketplace')->__('Add to Cart'); ?>" />
+    </form>    
+    <?php
+    }else{ ?>
+     <p class="<?php echo "simple_id_$assignSimpleProductId"; ?> assign_simple_product availability out-of-stock"></p>
+    <?php 
+     }
+     }   
+     }      
+     
+     
+     ?>

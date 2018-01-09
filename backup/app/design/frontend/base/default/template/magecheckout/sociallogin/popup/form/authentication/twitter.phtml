@@ -1,0 +1,18 @@
+<?php if ($this->isEnabled()): ?>
+    <div class="actions-toolbar social-btn twitter-login">
+        <div class="primary">
+            <button class="action" id="btn_twitter_login" type="button">
+                <span>
+                    <span><?php echo __('Twitter Sign In') ?></span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <script>
+        var twPopup = new SocialLoginPopup({
+            url: '<?php echo $this->getLoginUrl()?>',
+            title: '<?php echo $this->__('Login By Twitter')?>',
+            btnElement: 'btn_twitter_login'
+        });
+    </script>
+<?php endif; ?>

@@ -1,0 +1,108 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+        $orderEmailDatas = $this->orderEmailDataInformation();
+        $sellerIds = array ();
+        $sellerArrayIds=array();
+        /**
+         * Get the invoice email information like
+         * display product name
+         * display seller amount
+         * display product quantity
+         * display product amount
+         * display product commission
+         */
+        $displayProductName = Mage::helper ( 'marketplace' )->__ ( 'Product Name' );
+        $displaySellerAmount = Mage::helper ( 'marketplace' )->__ ( 'seller_amount' ).'<span style="font-size: 9px;display: block;">'.Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' ).'</span>';
+        $displayProductQty = Mage::helper ( 'marketplace' )->__ ( 'product_qty' );
+        $displayProductAmt = Mage::helper ( 'marketplace' )->__ ( 'Product Amount' );
+        $moduleName= Mage::app()->getRequest()->getModuleName();
+        $displayProductCommission = Mage::helper ( 'marketplace' )->__ ( 'commission_fee' );
+$invoiceOrderData=Mage::getSingleton('adminhtml/session')->getInvoiceOrderData();
+$invoiceSessionId=$invoiceOrderData['sellerSessionId'];
+
+        if($moduleName=="admin"){
+            foreach ( $orderEmailDatas as $data ) {
+                if (!in_array($data ['seller_id'], $sellerIds) && $data ['seller_id']==$invoiceSessionId) {
+                    $sellerIds[] = $data['seller_id'];
+                }
+            }
+         }
+        else{
+            foreach ( $orderEmailDatas as $data ) {
+                if (!in_array($data ['seller_id'], $sellerIds)) {
+                    $sellerArrayIds[] = $data['seller_id'];
+                }
+            }
+             $customerId='';
+             if (Mage::getSingleton('customer/session')->isLoggedIn()) {
+                 $customerInfo = Mage::getSingleton('customer/session')->getCustomer();
+                 $customerId = $customerInfo->getID();
+             if(in_array($customerId,$sellerArrayIds)){
+                 $sellerIds[]=$customerId;
+                 }
+             }
+        }
+           foreach($sellerIds as $id){
+            $totalProductAmt = $totalCommissionFee = $totalSellerAmt = 0;?>
+            <table cellspacing="0" cellpadding="0" border="0" width="650" style="border:1px solid #eaeaea"><thead><tr>
+            <th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductName;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductQty;?></th>
+            <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductAmt;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductCommission;?></th>
+            <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displaySellerAmount;?></th></tr></thead>
+            <tbody bgcolor="#F6F6F6">
+           <?php  $currencySymbolVal = Mage::app ()->getLocale ()->currency ( Mage::app ()->getStore ()->getCurrentCurrencyCode () )->getSymbol ();
+            foreach ( $orderEmailDatas as $data ) {
+                if ($id == $data ['seller_id']) {
+                    $sellerId = $data ['seller_id'];
+                    $productId = $data ['product_id'];
+                    $product = Mage::helper ( 'marketplace/marketplace' )->getProductInfo ( $productId );
+                    $groupId = Mage::helper ( 'marketplace' )->getGroupId ();
+                    $productGroupId = $product->getGroupId ();
+                    $productName = $product->getName ();?>
+                    <tr><td align="left" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $productName;?></td>
+                    <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo round ( $data ['product_qty'] );?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo  Mage::helper('core')->currency( $data ['product_amt'] );?></td>
+                    <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo Mage::helper('core')->currency( $data ['commission_fee']);?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo  Mage::helper('core')->currency( $data ['seller_amount']);?></td>
+                    <?php $totalProductAmt = $totalProductAmt + $data ['product_amt'] * round ( $data ['product_qty'] );
+                    $totalCommissionFee = $totalCommissionFee + $data ['commission_fee'];
+                    $totalSellerAmt = $totalSellerAmt + $data ['seller_amount'];
+                    $incrementId = $data ['increment_id'];
+                    $customerEmail = $data ['customer_email'];
+                    $customerFirstname = $data ['customer_firstname'];
+                    $productDetails .= '</tr>';
+                }
+            }?>
+            </tbody><tfoot>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo $this->__('Commision Fee');?></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbolVal . $totalCommissionFee ;?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo $this->__('Seller Amount');?><span style="font-size: 9px;display: block;"><?php echo Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' );?></span></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbolVal . $totalSellerAmt;?></span></td> </tr>
+                                <tr><td colspan="4" align="right" style="padding:3px 9px"><strong><?php echo $this->__('Total Product Amount')?></strong></td> <td align="center" style="padding:3px 9px"><strong><span><?php echo $currencySymbolVal . ($totalSellerAmt+$totalCommissionFee);?></span></strong></td></tr>
+                            </tfoot></table>
+
+       <?php  }?>

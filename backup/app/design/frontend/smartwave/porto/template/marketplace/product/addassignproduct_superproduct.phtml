@@ -1,0 +1,107 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+$assignProductId = $this->getRequest ()->getParam ( 'id' );
+$productData = Mage::helper('marketplace/marketplace')->getProductInfo ( $assignProductId );
+$productTypeId = $productData->getTypeId ();
+$selectedProductId = $this->getRequest ()->getParam ( 'pid' );
+if (isset ( $selectedProductId )) {
+    $product = $selectedProductData = Mage::helper('marketplace/marketplace')->getProductInfo( $selectedProductId );
+    $productTypeId = $selectedProductData->getTypeId ();
+}
+        if($productTypeId == 'configurable'){
+            if (isset ( $selectedProductId )) {
+                $childProducts = $this->getUsedProductsData($product);
+            } else {
+                $childProducts = $this->getUsedProductsData($productData);
+            }
+
+            if (isset ( $selectedProductId )) {
+                $attributes = $product->getTypeInstance ()->getConfigurableAttributesAsArray ();
+            } else {
+                $attributes = $productData->getTypeInstance ()->getConfigurableAttributesAsArray ();
+            }
+$attributeOptionsArray = array();
+foreach($childProducts as $childProduct){
+    $childProductData = Mage::helper('marketplace/marketplace')->getProductInfo($childProduct->getId());
+    $childProductQty = $this->getProductQty($childProduct->getId());
+
+    foreach ( $attributes as $attribute ) {
+
+                $attr = $childProductData->getResource ()->getAttribute ( $attribute ['attribute_code'] );
+                        $attributeOptionsArray [] = $attr->getSource ()->getOptionId ( $childProductData->getAttributeText ( $attribute ['attribute_code'] ) );
+                    }
+}
+$attributeValueForPrice = array ();
+            foreach ( $attributes as $attribute ) {
+                    foreach ( $attribute ['values'] as $attributesValue ) {
+                        $valueIndex = $attributesValue ['value_index'];
+                        $attributeValueForPrice [$valueIndex] ['is_percent'] = $attributesValue ['is_percent'];
+                        $attributeValueForPrice [$valueIndex] ['pricing_value'] = $attributesValue ['pricing_value'];
+                    }
+            }
+     $attribute = $this->getAttributeItems();
+     $attributeDetails = Mage::getSingleton ( 'eav/config' )->getAttribute ( 'catalog_product', $attribute ['attribute_code'] );
+                    $options = $attributeDetails->getSource ()->getAllOptions ( false );
+                    foreach ( $options as $option ) {
+                        $optionValue = $option ['value'];
+                        if (in_array ( $optionValue, $attributeOptionsArray )) {
+     ?>
+     <li>
+     <div>
+     <b><?php echo $this->__('Option').': '; ?></b><?php
+      echo $option['label'];  ?>
+     </div>
+     <div>
+     <b><?php echo $this->__('Price').': '; ?></b>
+     <input class="validate-zero-or-greater input-text" type="text" value="<?php echo round($attributeValueForPrice[$optionValue]['pricing_value'],2);
+     ?>" name="simple_product[option_price][<?php
+          echo $optionValue; ?>]" id="super_price_option_<?php
+           echo $optionValue; ?>">
+     <select style="display: none;" class="select" id="super_price_option_mode_<?php echo $optionValue; ?>" name="simple_product[option_price_mode][<?php
+      echo $optionValue; ?>]">
+     <option value="fixed"><?php echo $this->__('Fixed'); ?></option>
+     <option value="percentage" <?php if($attributeValueForPrice[$optionValue]['is_percent'] == 1){
+             echo 'selected="selected"';
+
+     } ?>><?php
+          echo $this->__('Percentage'); ?></option>
+     </select>
+     [<?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); ?>]
+     <input type="hidden" name="simple_product[label][<?php echo $optionValue; ?>]" value="<?php
+      echo $option['label']; ?>">
+     </div>
+     <input type="hidden" name="attributes[<?php echo $optionValue; ?>]" value="<?php
+      echo $attribute['attribute_id']; ?>">
+     </li>
+     <?php
+     }
+     }
+
+  }?>

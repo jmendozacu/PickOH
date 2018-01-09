@@ -1,0 +1,120 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+$productId = $this->getRequest ()->getParam ( 'id' );
+$storeIdVal = $this->getRequest ()->getParam ( 'storeId' );
+$storeId = 0;
+if (isset ( $storeIdVal )) {
+    $storeId = $storeIdVal;
+}
+if (isset ( $productId )) {
+    $product = $this->getProductData ( $productId, $storeId );
+}
+$getCustomAttributes = $this->getCustomAttributes();
+
+foreach ($getCustomAttributes->getItems() as $attributeKey) {
+                $attributeCodes[] = $attributeKey->getAttributeCode();
+                $attributeCode = $attributeKey->getAttributeCode();
+                $isRequired = $attributeKey->getIsRequired();
+                $attributeName = $attributeKey->getFrontendLabel();
+                $attributeType = $attributeKey->getFrontendInput();
+                $attributeIdArray = Mage::getResourceModel('eav/entity_attribute')->getIdByCode('catalog_product', $attributeCode);
+                $attributeOptionArray = Mage::getModel('eav/config')->getAttribute('catalog_product', $attributeIdArray );
+            switch ($attributeType) {
+            case "text":
+                echo ' <li class="wide fields"><div class="field">
+   <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+                    <div class="input-box">
+                         <input id="'.$attributeCode.'" name="product['.$attributeCode.']"  value=" ';?><?php if(!empty($product[$attributeCode])) { echo $product[$attributeCode]; }echo '" '; ?> <?php if($isRequired != 0 ) { echo 'class="input-text required-entry "'; } else { echo 'class="input-text"' ;} echo'  type="text" />
+                </div></div></li>';
+            break;
+            case "boolean": echo '<li class="fields">
+              <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+                                    <div class="input-box"> <select id="'.$attributeCode.'" name="product['.$attributeCode.']">'; ?>
+                                        <?php foreach ($attributeOptionArray->getSource()->getAllOptions() as $attr_option) {
+                                         if($product[$attributeCode] == $attr_option["value"]) {
+                                         echo '<option class="attribute-boolean" selected="selected" value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+                                         } else { echo '<option class="option-boolean" value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>'; }
+                                        }
+             echo '</select></div></li>';
+            break;
+            case "select":    echo '<li class="fields">
+                                    <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+                                    <div class="input-box"><select id="'.$attributeCode.'" name="product['.$attributeCode.']" '; ?> <?php if($isRequired != 0 ) { echo 'class="select select input-text required-entry input-text_pro"'; } else { echo 'class="select select input-text input-text_pro"' ;} echo '>';?>
+                                        <?php foreach ($attributeOptionArray->getSource()->getAllOptions() as $attr_option) {
+                                   if($product[$attributeCode] == $attr_option["value"]) {
+                                   echo '<option selected="selected" value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';
+                                  }else { echo '<option value="'.$attr_option["value"].'"> '.$attr_option["label"].'</option>';}
+                                        }
+                echo ' </select></div></li>';
+            break;
+            case "multiselect":$attributeCodeArray  = explode(',',$product[$attributeCode]);
+            echo '<li class="fields"> <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo' </label>
+                                    <div class="input-box"><select multiple="multiple" id="'.$attributeCode.'" name="product['.$attributeCode.'][]" '; ?> <?php if($isRequired != 0 ) { echo 'class="multiselect required-entry"'; } else { echo 'class="multiselect"' ;}'>';?>
+                                        <?php foreach ($attributeOptionArray->getSource()->getAllOptions() as $attrOption) {
+                                            if(in_array($attrOption["value"],$attributeCodeArray)) {
+                                            echo '<option selected="selected" value="'.$attrOption["value"].'"> '.$attrOption["label"].'</option>';
+                                            } else { echo '<option value="'.$attrOption["value"].'"> '.$attrOption["label"].'</option>'; }
+                                        }
+               echo '</select></div></li>';
+            break;
+            case "textarea":    echo ' <li class="fields wide attr_textarea">
+                                    <div class="field attr_textarea">
+                                        <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required"><em>*</em>'; } else { echo '>'; } ?> <?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo'  </label>
+                                        <div class="input-box attr_textarea">
+             <textarea id="'.$attributeCode.'" name="product['.$attributeCode.']" '; ?> <?php if($isRequired != 0 ) { echo 'class="required-entry textarea attr_textarea"'; } else { echo 'class="textarea"' ;} echo'  rows="7" cols="0" style="width: 710px;white-space: nowrap;">'; ?>
+                                <?php if(!empty($product[$attributeCode])) {
+              echo $product[$attributeCode];
+            }
+              echo '</textarea></div></div></li>';
+            break;
+            case "price": echo '<li class="fields attr-price">
+            <label for="'.$attributeCode.'"'; if($isRequired != 0 ) { echo 'class="required attr-price"><em>*</em>'; } else { echo '>'; }   ?><?php if($attributeName == ""){echo $this->__("Name Missing"); }else { echo $this->__($attributeName); } echo'  </label>
+                                    <div class="input-box attr-price" style="width: auto;"> <input id="'.$attributeCode.'" name="product['.$attributeCode.']" value="'; ?><?php
+                if (isset($product[$attributeCode])) {
+                    echo $product[$attributeCode];
+                }    echo '"'; ?>
+                <?php if($isRequired != 0 ) { echo 'class="required-entry validate-zero-or-greater input-text attr-price"'; } else { echo 'class="validate-zero-or-greater input-text"' ;} echo' type="text" '; ?><?php
+               echo '><strong>['; ?><?php echo Mage::app()->getLocale()->currency(Mage::app()->getStore()->getBaseCurrencyCode())->getShortName(); echo ']
+                 </strong></div></li>';
+            break;
+                case "date":$dateIsSet = "set";
+echo '<li class="fields custom_input attr-date"><label for="'.$attributeCode.'">'; ?><?php if($attributeName == ""){echo $this->__("Name Missing"); }
+else { echo $this->__($attributeName);
+} echo '</label><div class="input-box attr-date" style="width: auto;"><input name="product['.$attributeCode.']"  id="'.$attributeCode.'"  value="'; ?><?php
+if (!empty($product[$attributeCode])) {
+    echo $product[$attributeCode];
+}
+echo '" class="validate-date validate-date-range date-range-date-from attr-date" type="text"'; ?> <?php
+echo '/> <img src="'; ?><?php echo $this->getSkinUrl("images/calendar.gif"); echo '" alt="" class="v-middle attr-date" id="';?><?php echo $attributeCode.'_trig" title="'; ?><?php echo $this->__('Select Date'); echo '" style="" />
+</div></li>';break;
+           default:
+            break;
+            }
+        }

@@ -1,0 +1,159 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Check the product custom options is equal to 1
+ */
+$select_sub_option_count = '';
+$optionCount = $selectSubOptionCount = 0;
+$option_count = '';
+
+$option_count = 1;
+$child_option_count_value = 1;
+$select_sub_option_count = 0;
+$product_options = array ();
+
+$o = $this->getFileInfo ();
+
+$optionTitle = $optionTypeData = $optionIsRequire = $optionSortOrder = '';
+$optionTitle = $o->getTitle ();
+$optionTypeData = $o->getType ();
+$optionIsRequire = $o->getIsRequire ();
+$optionSortOrder = $o->getSortOrder ();
+
+$file = '';
+
+/**
+ * option type as dropdown.
+ */
+$optionTypeData == 'drop_down' ? $dropDown = 'selected' : '';
+/**
+ * option type as date time.
+ */
+$optionTypeData == 'date_time' ? $dateTime = 'selected' : '';
+
+/**
+ * Check option type is equal to drop down
+ * or option type is equal to radio
+ * or option type is equal to checkbox
+ * or option type is equal to multiple
+ * Get the values
+ */
+if ($optionTypeData == 'file') {
+    $optionPrice = $optionPriceTypeData = $optionSkuVar = $optionFileExtension = $optionImageSizeX = $optionImageSizeY = '';
+    /**
+     * Get the value of option price, option price type, option sky, option file extension, option image size x, option image size y
+     */
+    $optionPrice = round ( $o->getPrice (), 2 );
+    $optionPriceTypeData = $o->getPriceType ();
+    $optionSkuVar = $o->getSku ();
+    $optionFileExtension = $o->getFileExtension ();
+    $optionImageSizeX = $o->getImageSizeX ();
+    $optionImageSizeY = $o->getImageSizeY ();
+    $childOptionCountData = $child_option_count_value;
+    
+    ?>
+<div
+ id="<?php echo 'product_option_' . $childOptionCountData . '_type_file'; ?>"
+ class="grid tier form-list">
+ <table class="border form-list mareket_place_price_table"
+  cellpadding="0" cellspacing="0">
+  <tbody>
+   <tr class="headings">
+    <th class="type-price"><label><?php echo $this->__('Price'); ?></label></th>
+    <th class="type-type"><label><?php echo $this->__('Price Type'); ?></label></th>
+    <th class="type-sku"><label><?php echo $this->__('SKU'); ?></label></th>
+    <th class="type-title"><label><?php echo $this->__('Allowed File Extensions'); ?></label></th>
+    <th class="last"><label><?php echo $this->__('Maximum Image Size'); ?></label></th>
+   </tr>
+   <tr>
+    <td><input class="input-text validate-zero-or-greater" type="text"
+     name="<?php echo 'product[options][' . $childOptionCountData . '][price]'; ?>"
+     value="<?php
+    echo $optionPrice;
+    ?>"></td>
+    <td>
+<?php
+    $fixedText = $percentText = '';
+    if (isset ( $optionPriceTypeData ) && $optionPriceTypeData == 'fixed') {
+        $fixedText = 'selected';
+    }
+    if (isset ( $optionPriceTypeData ) && $optionPriceTypeData == 'percent') {
+        $percentText = 'selected';
+    }
+    ?>
+<select
+     name="<?php echo 'product[options][' . $childOptionCountData . '][price_type]'; ?>"
+     id="<?php
+    echo 'product_option_' . $childOptionCountData . '_price_type';
+    ?>"
+     class="select product-option-price-type" title="">
+      <option value="fixed" <?php echo $fixedText;  ?>>
+<?php echo $this->__('fixed'); ?></option>
+      <option value="percent" <?php echo $percentText; ?>>
+<?php echo $this->__('Percent'); ?></option>
+    </select>
+    </td>
+    <td><input type="text" class="input-text"
+     name="<?php echo 'product[options][' . $childOptionCountData . '][sku]'; ?>"
+     value="<?php
+    echo $optionSkuVar;
+    ?>"></td>
+    <td><input class="input-text" type="text"
+     name="<?php echo 'product[options][' . $childOptionCountData . '][file_extension]'; ?>"
+     value="<?php
+    echo $optionFileExtension;
+    ?>"></td>
+    <td class="type-last last" nowrap=""><input class="input-text"
+     type="text"
+     name="<?php echo 'product[options][' . $childOptionCountData . '][image_size_x]'; ?>"
+     value="<?php
+    echo $optionImageSizeX;
+    ?>"><?php
+    echo $this->__ ( 'x' );
+    ?>
+                    <input class="input-text" type="text"
+     name="<?php echo 'product[options][' . $childOptionCountData . '][image_size_y]'; ?>"
+     value="<?php
+    echo $optionImageSizeY;
+    ?>"><?php
+    echo $this->__ ( 'px' ) . '.';
+    ?>
+<br><?php echo $this->__('leave blank if its not an image'); ?>
+                                    </td>
+   </tr>
+  </tbody>
+ </table>
+</div>
+<?php
+    $child_option_count_value = $childOptionCountData;
+    $child_option_count_value = $child_option_count_value + 1;
+                    }
+   $option_count = $option_count + 1;
+?>

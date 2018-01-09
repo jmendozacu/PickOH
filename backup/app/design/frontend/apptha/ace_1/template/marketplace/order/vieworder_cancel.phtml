@@ -1,0 +1,61 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Get the order details.
+ */
+$item = $this->getCancelStatus();
+/**
+ * Get order id from the params.
+ */
+$orderId = $this->getRequest()->getParam('orderid');
+
+/**
+ * Get the customer session.
+ */
+$customerData = Mage::getSingleton('customer/session')->getCustomer();
+$loggedInCustomerId = $customerData->getId();
+$cancelOrderItemProductIds = Mage::helper('marketplace/vieworder')->cancelOrderItemProductIds(Mage::getSingleton('customer/session')->getId(),$orderId);
+
+$orderPrdouctIds = Mage::helper('marketplace/vieworder')->getOrderProductIds(Mage::getSingleton('customer/session')->getId(),$orderId);
+$orderItem = $item;
+$itemProductId = $item->getProductId();
+                 /**
+                 * Check cancel order status.
+                 */
+                if(!in_array($itemProductId,$cancelOrderItemProductIds)){
+                $statusRefundItem = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,2);
+                $status = Mage::getModel('marketplace/order')->getItemRequestStatus($orderItem->getProductId(),$orderId,$loggedInCustomerId,3);
+            if($status == 1 || $statusRefundItem){
+                ?>
+            <a onclick="return confirm('<?php echo $this->__('Are you sure want to cancel?'); ?>');" href="<?php echo Mage::getUrl('marketplace/shipment/cancel').'id/'.$orderId.'/item/'.$itemProductId; ?>"><?php echo $this->__('Cancel'); ?></a>
+            <?php }
+                }
+
+             ?>

@@ -1,0 +1,180 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+/**
+ * Getting Order Data
+ */
+$orderEmailData = $this->orderEmailData();
+
+$deliveryScheduleEnable = Mage::getStoreConfig ( 'deliveryschedule/general/delivery_schedule_enabled' );
+$sellerIds = array ();
+$order = $this->getOrder();
+$adminShippingAmount = $order['base_shipping_amount'];
+$isVirtual=$order->getIsVirtual();
+$shippingId=$this->getShippingIdFromOrder($isVirtual,$order);
+$shipMehtod = $order->getShippingMethod();
+$checkSellerOrProductShipping = Mage::getStoreConfigFlag('marketplace/shipping/shippingcost');
+$displayProductCommission = Mage::helper ( 'marketplace' )->__ ( 'Commission Fee' );
+$displaySellerAmount = Mage::helper ( 'marketplace' )->__ ( 'Seller Amount' ).'<span class=incl-shippment style="font-size: 10px;display: block;">'.Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' ).'</span>';
+$displayProductName = Mage::helper ( 'marketplace' )->__ ( 'Product Name' );
+$displayProductQty = Mage::helper ( 'marketplace' )->__ ( 'Product QTY' );
+$displayProductAmt = Mage::helper ( 'marketplace' )->__ ( 'Product Amount' );
+foreach ( $orderEmailData as $data ) {
+    if (! in_array ( $data ['seller_id'], $sellerIds )) {
+        $sellerIds [] = $data ['seller_id'];
+    }
+}
+if($checkSellerOrProductShipping != 1 && $shipMehtod =='apptha_apptha'){
+    foreach ( $sellerIds as $id ) {
+        $sellerProfile = $this->getSellerProfile($id);
+        $sellerDefaultCountry = $sellerProfile['country'];
+        $nationalShippingPrice = $sellerProfile['national_shipping_cost'];
+        $internationalShippingPrice = $sellerProfile['international_shipping_cost'];
+        $totalProductAmt = $totalCommissionFee = $totalSellerAmt = 0;
+        /**
+         * Initializing the seller sales notification table
+         */
+        ?>
+
+        <table cellspacing="0" cellpadding="0" border="0" width="650" style="border:1px solid #eaeaea">
+        <thead><tr>
+        <th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductName; ?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductQty; ?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductAmt; ?></th>
+        <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductCommission;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displaySellerAmount;?></th></tr></thead>
+        <tbody bgcolor="#F6F6F6">
+    <?php $currencySymbol = Mage::app ()->getLocale ()->currency ( Mage::app ()->getStore ()->getCurrentCurrencyCode () )->getSymbol ();
+
+        foreach($orderEmailData as $data ) {
+            if ($id == $data ['seller_id']) {
+
+                $groupId = $this->getSellerGroupId();
+                $productId = $data ['product_id'];
+                $product = $this->getProductInfo ( $productId );
+                $productName = $product->getName ();
+                $productGroupId = $product->getGroupId ();
+                $productTypeId=$product->getTypeId();
+                $sellerId = $data ['seller_id'];?>
+                <tr>
+                <td align="left" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $productName; ?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo round ( $data ['product_qty'] );?></td>
+                <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . round ( $data ['product_amt'], 2 ); ?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . round ( $data ['commission_fee'], 2 ); ?></td>
+                <?php
+                echo $this->getLayout()->createBlock('marketplace/seller_notification')->setData($data)->setTemplate('marketplace/seller/notification_commission.phtml')->toHtml();
+                $totalProductAmt = $totalProductAmt + ($data ['product_amt'] * $data ['product_qty']);
+                $totalCommissionFee = $totalCommissionFee + $data ['commission_fee'];
+                $totalSellerAmt = $totalSellerAmt + $data ['seller_amount']-$data['commission_fee'] ;
+                $typeIdArray=array("virtual","downloadable");
+                $nationalShippingPrices = in_array($productTypeId,$typeIdArray)?$nationalShippingPrices:$nationalShippingPrices + ($nationalShippingPrice * $data ['product_qty']);
+                $internationalShippingPrices = in_array($productTypeId,$typeIdArray)?$internationalShippingPrices:$internationalShippingPrices + ($internationalShippingPrice * $data ['product_qty']);
+                $customerEmail = $data ['customer_email'];
+                $incrementId = $data ['increment_id'];
+                $customerFirstname = $data ['customer_firstname'];
+                $deliveryScheleDetails=$this->getSellerDeliveryScheduleDetails($deliveryScheduleEnable,$data); ?>
+                </tr>
+            <?php }
+        } ?>
+        </tbody><tfoot>
+        <?php
+        if ($deliveryScheduleEnable == 1) { ?>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Schedule' );?></td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $deliveryScheleDetails['deliveryTypeInfo']; ?></span></td></tr>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo  Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Date' );?></td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $deliveryScheleDetails['deliveryDateInfo'] . '  ' . $deliveryScheleDetails['deliveryTimeInfo'];?></span></td></tr>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo  Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Comments' );?></td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $deliveryScheleDetails['deliveryComment']; ?></span></td></tr>
+       <?php }
+        if ($sellerDefaultCountry == $shippingId && $nationalShippingPrice != ''&&(!(in_array($productTypeId,$typeIdArray))) ){
+            $TotalSellerShppingCost = $totalSellerAmt + $nationalShippingPrices;
+            $TotalProductShppingCost = $totalCommissionFee + $totalSellerAmt + $nationalShippingPrices; ?>
+            <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Commision Fee' );?></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $totalCommissionFee, 2 );?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Seller Amount' );?><span style="font-size: 9px;display: block;"><?php echo Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' );?></span></td><td align="center" style="padding:3px 9px"><span>' . $currencySymbol . round ( $TotalSellerShppingCost, 2 ) . '</span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><strong><?php echo Mage::helper ( 'marketplace' )->__ ( 'Total Product Amount' );?></strong></td><td align="center" style="padding:3px 9px"><strong><span><?php echo $currencySymbol . round (($TotalProductShppingCost),2);?></span></strong></td></tr>
+        <?php }
+        else if ($sellerDefaultCountry != $shippingId && $internationalShippingPrice != '' &&(!(in_array($productTypeId,$typeIdArray)))){
+            $TotalSellerShppingCost = $totalSellerAmt + $internationalShippingPrices;
+            $TotalProductShppingCost = $totalCommissionFee + $totalSellerAmt + $internationalShippingPrices; ?>
+
+            <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Commision Fee' );?></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $totalCommissionFee, 2 );?></span></td></tr>
+                                <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Seller Amount' );?><span style="font-size: 9px;display: block;"><?php echo Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' );?></span></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $TotalSellerShppingCost, 2 );?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><strong><?php echo Mage::helper ( 'marketplace' )->__ ( 'Total Product Amount' );?></strong></td><td align="center" style="padding:3px 9px"><strong><span><?php echo $currencySymbol . round (($TotalProductShppingCost),2);?></span></strong></td></tr>
+       <?php  } else { ?>
+            <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Commision Fee' );?></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $totalCommissionFee, 2 );?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Seller Amount' );?><span style="font-size: 9px;display: block;"><?php echo Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' );?></span></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $totalSellerAmt, 2 );?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><strong><?php echo Mage::helper ( 'marketplace' )->__ ( 'Total Product Amount' );?></strong></td><td align="center" style="padding:3px 9px"><strong><span><?php echo $currencySymbol . round (($totalCommissionFee + $totalSellerAmt),2);?></span></strong></td></tr>
+
+        <?php } ?>
+        </tfoot></table>
+        <?php
+    }
+} else {
+    foreach ( $sellerIds as $id ) {
+        $sellerProfile = $this->getSellerProfile($id);
+        $totalProductAmt = $totalCommissionFee = $totalSellerAmt = 0;?>
+        <table cellspacing="0" cellpadding="0" border="0" width="650" style="border:1px solid #eaeaea">
+        <thead><tr>
+        <th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductName;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductQty;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductAmt;?></th>
+        <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductCommission;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displaySellerAmount;?></th></tr></thead>
+        <tbody bgcolor="#F6F6F6">
+        <?php $currencySymbol = Mage::app ()->getLocale ()->currency ( Mage::app ()->getStore ()->getCurrentCurrencyCode () )->getSymbol ();
+        foreach ( $orderEmailData as $data ) {
+            if ($id == $data ['seller_id']) {
+                $sellerId = $data ['seller_id'];
+                $groupId = $this->getSellerGroupId();
+                $productId = $data ['product_id'];
+                $product = $this->getProductInfo ( $productId );
+                $productGroupId = $product->getGroupId ();
+                $adminCommissionFee = $data ['commission_fee'];
+                $productName = $product->getName (); ?>
+                <tr>
+                <td align="left" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $productName;?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo round ( $data ['product_qty'] );?></td>
+                <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . round ( $data ['product_amt'], 2 );?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . round ( $adminCommissionFee, 2 );?></td>
+                <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . round ( $data ['seller_amount']-$data ['commission_fee'], 2 );?></td>
+                <?php $totalProductAmt = $totalProductAmt + ($data ['product_amt'] * $data ['product_qty']);
+                $totalCommissionFee = $totalCommissionFee + $data ['commission_fee'];
+                $totalSellerAmt = $totalSellerAmt + $data ['seller_amount']-$data ['commission_fee'];
+                $customerEmail = $data ['customer_email'];
+                $incrementId = $data ['increment_id'];
+                $customerFirstname = $data ['customer_firstname'];
+                $deliveryScheleData=$this->getSellerDeliveryScheduleDetails($deliveryScheduleEnable,$data); ?>
+                </tr>
+            <?php }
+        }?>
+        </tbody><tfoot>
+       <?php  if ($deliveryScheduleEnable == 1) { ?>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Schedule' );?></td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $deliveryScheleData['deliveryTypeInfo'];?></span></td></tr>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Date' );?></td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $deliveryScheleData['deliveryDateInfo'] . '  ' . $deliveryScheleData['deliveryTimeInfo'];?></span></td></tr>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Comments' );?></td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $deliveryScheleData['deliveryComment'];?></span></td></tr>
+            <tr><td colspan="1" style="padding:3px 9px;font-weight:bold;"><?php echo Mage::helper ( 'deliveryschedule' )->__ ( 'Delivery Cost' );?> </td><td colspan="4" align="left" style="padding:3px 9px"><span><?php echo $currencySymbol . $deliveryScheleData['deliveryCost'];?></span></td></tr>
+       <?php  }
+        $totalCommissionFee = $totalCommissionFee + $adminShippingAmount ; ?>
+        <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Commision Fee' );?><span style="font-size: 9px;display: block;"><?php echo Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' );?></span></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $totalCommissionFee, 2 );?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><?php echo Mage::helper ( 'marketplace' )->__ ( 'Seller Amount' );?><span style="font-size: 9px;display: block;"><?php echo Mage::helper ( 'marketplace' )->__ ( '(Incl. shippment)' );?></span></td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . round ( $totalSellerAmt, 2 );?></span></td></tr>
+                                 <tr><td colspan="4" align="right" style="padding:3px 9px"><strong><?php echo Mage::helper ( 'marketplace' )->__ ( 'Total Product Amount' );?></strong></td><td align="center" style="padding:3px 9px"><strong><span><?php echo $currencySymbol . round (($totalCommissionFee + $totalSellerAmt),2);?></span></strong></td></tr>
+        </tfoot></table>
+
+   <?php  }
+}
+?>

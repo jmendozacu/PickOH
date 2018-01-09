@@ -1,0 +1,99 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+$productId = Mage::registry ( 'current_product' )->getId ();
+$mainProduct = Mage::helper('marketplace/marketplace')->getProductInfo( $productId );
+
+$product=$this->getData('product');
+/**
+ *  Get all configurable attributes
+ */
+$attributes = $product->getTypeInstance(true)->getConfigurableAttributes($product);
+/**
+ * Array to keep the price differences for each attribute value
+ */
+$pricesByAttributeValues = array();
+/**
+ * Base price of the configurable product
+ */
+$basePrice = $product->getFinalPrice();
+/**
+ * loop through the attributes and get the price adjustments specified in the configurable product admin page
+ */
+foreach ($attributes as $attribute){
+    $prices = $attribute->getPrices();
+    foreach ($prices as $price){
+        if ($price['is_percent']){
+            /**
+             * If the price is specified in percents
+             */
+            $pricesByAttributeValues[$price['value_index']] = (float)$price['pricing_value'] * $basePrice / 100;
+        }
+        else {
+            /**
+             * If the price is absolute value
+             */
+            $pricesByAttributeValues[$price['value_index']] = (float)$price['pricing_value'];
+        }
+    }
+}
+/**
+ * Get all simple products
+ */
+$simple = $product->getTypeInstance()->getUsedProducts();
+/**
+ * Loop through the products
+ */
+foreach ($simple as $sProduct){
+    $totalPrice = $basePrice;
+    /**
+     * Loop through the configurable attributes
+     */
+    foreach ($attributes as $attribute){
+        /**
+         * Get the value for a specific attribute for a simple product
+         */
+        $value = $sProduct->getData($attribute->getProductAttribute()->getAttributeCode());
+        /**
+         * Add the price adjustment to the total price of the simple product
+         */
+        if (isset($pricesByAttributeValues[$value])){
+            $totalPrice += $pricesByAttributeValues[$value];
+        }
+    }
+    $assignProductObject=Mage::helper('marketplace/marketplace')->getProductInfo($sProduct->getId());
+    $assignSimpleProductId = $assignProductObject->getConfigAssignSimpleId();
+    echo '<p class="simple_id_'.$assignSimpleProductId.' assign_simple_product" style="display:none;">'.Mage::helper('core')->currency($totalPrice, true, false).'</p>';
+}
+
+/**
+ * End if for configurable or not
+ */
+
+?>

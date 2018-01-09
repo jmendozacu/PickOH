@@ -1,0 +1,34 @@
+<label>One Page Checkout Overview</label>
+<remove name="right"/>
+<remove name="left"/>
+<block type="onestepcheckout/ajaxupdate" name="ajaxupdate" output="toHtml" as="ajaxupdate" template="onestepcheckout/onestep/ajaxupdate.phtml">
+   <block type="checkout/onepage_shipping_method_available" name="shipping_method" as="shipping_method" template="onestepcheckout/onestep/ship-method.phtml"/>
+   <block type="checkout/onepage_payment_methods" name="payment_methods" as="payment_methods" template="onestepcheckout/onestep/payment/methods.phtml">
+      <action method="setMethodFormTemplate">
+         <method>purchaseorder</method>
+         <template>payment/form/purchaseorder.phtml</template>
+      </action>
+   </block>
+</block>
+<reference name="top.links">
+   <action method="removeLinkByUrl">
+      <url helper="customer/getRegisterUrl"/>
+   </action>
+   <action method="addLink" translate="label title" module="customer">
+      <label>Log Out</label>
+      <url helper="customer/getLogoutUrl"/>
+      <title>Log Out</title>
+      <prepare/>
+      <urlParams/>
+      <position>100</position>
+   </action>
+</reference>
+<reference name="right">
+   <block type="sales/reorder_sidebar" name="sale.reorder.sidebar" as="reorder" template="sales/reorder/sidebar.phtml"/>
+</reference>
+<reference name="head">
+   <action method="addItem">
+      <type>js</type>
+      <name>varien/weee.js</name>
+   </action>
+</reference>

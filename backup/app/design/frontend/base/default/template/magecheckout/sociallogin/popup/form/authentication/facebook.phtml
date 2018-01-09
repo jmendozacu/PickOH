@@ -1,0 +1,18 @@
+<?php if ($this->isEnabled()): ?>
+    <div class="actions-toolbar social-btn facebook-login">
+        <div class="primary">
+            <button class="action" id="btn_facebook_login" type="button">
+                <span>
+                    <span><?php echo $this->__('Facebook Sign In') ?></span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <script>
+        var fbPopup = new SocialLoginPopup({
+            url: '<?php echo $this->getLoginUrl()?>',
+            title: '<?php echo $this->__('Login By Facebook')?>',
+            btnElement: 'btn_facebook_login'
+        });
+    </script>
+<?php endif; ?>

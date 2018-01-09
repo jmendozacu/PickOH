@@ -1,0 +1,75 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * This file is used to display the product sold count in product detail page
+ */
+
+if (Mage::getStoreConfig ( 'marketplace/product/product_sold_count' ) == 1 && $this->displayProductStockStatus() && $this->getProduct ()->isAvailable()) {
+    ?>
+<div style="clear: both;"></div>
+<div class="product-sold-count">
+            <?php
+    $arrStatus = array (
+            'complete'
+
+    );
+    /**
+     * Getting current productid
+     */
+    $productId = $this->getProduct ()->getId ();
+    $items = $this->getOrderItemCollection($productId);
+    $orderArr = array ();
+    foreach ( $items as $item ) {
+        $orderArr [] = $item->order_id;
+    }
+    $collection =$this->getOrderCollection($arrStatus,$orderArr);
+    $count =  $collection->getSize();
+   
+    $_product = Mage::helper('marketplace/marketplace')->getProductInfo( $productId );
+    $productStockObject=$this->getProductStockObject($_product);
+    $stocklevel = ( int )$productStockObject ->getQty ();
+    if ($stocklevel > 0 && $stocklevel <= 10) {
+        echo $this->__ ( 'Available %d ', $stocklevel );
+    } else {
+        if (($stocklevel > 0 && $stocklevel > 10) || $this->getProduct ()->getTypeId() == 'downloadable') {
+            echo $this->__ ( 'More than 10 available' );
+        }
+    }
+    $commissionModel= $this->getCommissionCollection($productId);
+    $commissionModelData=$commissionModel->getData();
+    foreach($commissionModelData as $commissionDat){
+        $result+=$commissionDat['product_qty'];
+    }
+    if ($result > 0) {
+        echo $this->__ ( ' / %d sold', $result );
+    }
+ ?>
+</div>
+<?php } ?>

@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <action method="addJs" ifconfig="sociallogin/general/add_jquery_library">
+                <script>magecheckout/sociallogin/jquery/jquery-1.11.1.min.js</script>
+            </action>
+            <action method="addJs" ifconfig="sociallogin/general/add_jquery_library">
+                <script>magecheckout/sociallogin/jquery/jquery-noconflict.js</script>
+            </action>
+            <action method="addJs">
+                <script>magecheckout/sociallogin/jquery/jquery.magnific-popup.min.js</script>
+            </action>
+            <action method="addJs">
+                <script>magecheckout/sociallogin/sociallogin.js</script>
+            </action>
+            <action method="addJs">
+                <script>magecheckout/sociallogin/form.js</script>
+            </action>
+            <action method="addJs">
+                <script>magecheckout/sociallogin/requirejs-config.js</script>
+            </action>
+            <action method="addCss">
+                <stylesheet>css/magecheckout/sociallogin/style.css</stylesheet>
+            </action>
+            <action method="addCss" ifconfig="sociallogin/general/disable_custom_css">
+                <stylesheet>css/magecheckout/sociallogin/style/default.css</stylesheet>
+            </action>
+            <action method="addCss">
+                <stylesheet>css/magecheckout/sociallogin/magnific-popup.css</stylesheet>
+            </action>
+            <action method="addCss">
+                <stylesheet>css/magecheckout/sociallogin/bootstrap-grid.css</stylesheet>
+            </action>
+            <block type="core/text" name="social.login.custom.css">
+                <action method="setText">
+                    <text helper="sociallogin/generator_css/getDesignFile"/>
+                </action>
+            </block>
+        </reference>
+        <reference name="before_body_end">
+            <block type="sociallogin/sociallogin" name="social-login-popup" as="popup.modal" template="magecheckout/sociallogin/popup.phtml">
+                <block type="sociallogin/sociallogin/popup_authentication" name="social-login-popup-authentication" as="popup.authentication" template="magecheckout/sociallogin/popup/form/authentication.phtml">
+                    <block type="sociallogin/sociallogin_facebook" name="social-login-popup-authentication-facebook" as="popup.authentication.facebook" template="magecheckout/sociallogin/popup/form/authentication/facebook.phtml"/>
+                    <block type="sociallogin/sociallogin_google" name="social-login-popup-authentication-google" as="popup.authentication.google" template="magecheckout/sociallogin/popup/form/authentication/google.phtml"/>
+                    <block type="sociallogin/sociallogin_twitter" name="social-login-popup-authentication-twitter" as="popup.authentication.twitter" template="magecheckout/sociallogin/popup/form/authentication/twitter.phtml"/>
+                    <block type="sociallogin/sociallogin_linkedin" name="social-login-popup-authentication-linkedin" as="popup.authentication.linkedin" template="magecheckout/sociallogin/popup/form/authentication/linkedin.phtml"/>
+                    <block type="sociallogin/sociallogin_instagram" name="social-login-popup-authentication-instagram" as="popup.authentication.instagram" template="magecheckout/sociallogin/popup/form/authentication/instagram.phtml"/>
+                    <block type="core/text_list" name="login.captcha">
+                        <block type="captcha/captcha" name="logincaptcha">
+                            <reference name="head">
+                                <action method="addJs">
+                                    <file>mage/captcha.js</file>
+                                </action>
+                            </reference>
+                            <action method="setFormId">
+                                <formId>user_login</formId>
+                            </action>
+                            <action method="setImgWidth">
+                                <width>230</width>
+                            </action>
+                            <action method="setImgHeight">
+                                <width>50</width>
+                            </action>
+                        </block>
+                    </block>
+                </block>
+                <block type="customer/form_register" name="social-login-popup-create" as="popup.create" template="magecheckout/sociallogin/popup/form/create.phtml">
+                    <block type="core/text_list" name="form.additional.info">
+                        <block type="captcha/captcha" name="createcaptcha">
+                            <reference name="head">
+                                <action method="addJs">
+                                    <file>mage/captcha.js</file>
+                                </action>
+                            </reference>
+                            <action method="setFormId">
+                                <formId>user_create</formId>
+                            </action>
+                            <action method="setImgWidth">
+                                <width>230</width>
+                            </action>
+                            <action method="setImgHeight">
+                                <width>50</width>
+                            </action>
+                        </block>
+                    </block>
+                </block>
+                <block type="sociallogin/sociallogin/popup_forgot" name="social-login-popup-forgot" as="popup.forgot" template="magecheckout/sociallogin/popup/form/forgot.phtml">
+                    <block type="core/text_list" name="forgot.captcha">
+                        <block type="captcha/captcha" name="forgotcaptcha">
+                            <reference name="head">
+                                <action method="addJs">
+                                    <file>mage/captcha.js</file>
+                                </action>
+                            </reference>
+                            <action method="setFormId">
+                                <formId>user_forgotpassword</formId>
+                            </action>
+                            <action method="setImgWidth">
+                                <width>230</width>
+                            </action>
+                            <action method="setImgHeight">
+                                <width>50</width>
+                            </action>
+                        </block>
+                    </block>
+                </block>
+            </block>
+        </reference>
+    </default>
+</layout>

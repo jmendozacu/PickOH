@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+        <sociallogin module="sociallogin" translate="title">
+            <title>Social Login</title>
+            <sort_order>60</sort_order>
+            <action>adminhtml/system_config/edit/section/sociallogin</action>
+        </sociallogin>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <sociallogin translate="title" module="sociallogin">
+                                        <title>Social Login</title>
+                                    </sociallogin>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

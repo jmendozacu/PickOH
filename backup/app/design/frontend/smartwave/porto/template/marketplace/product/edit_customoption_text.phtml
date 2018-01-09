@@ -1,0 +1,128 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+/**
+ * Check the product custom options is equal to 1
+ */
+$select_sub_option_count = '';
+$optionCount = $selectSubOptionCount = 0;
+$option_count = '';
+
+/**
+ * Display product custom option, If it's exist
+ * Assign the option count, child option count
+ */
+
+$option_count = 1;
+$child_option_count_value = 1;
+$select_sub_option_count = 0;
+$product_options = array ();
+
+$o = $this->getTextInfo ();
+
+$optionTitle = $optionTypeData = $optionIsRequire = $optionSortOrder = '';
+$optionTitle = $o->getTitle ();
+$optionTypeData = $o->getType ();
+$optionIsRequire = $o->getIsRequire ();
+$optionSortOrder = $o->getSortOrder ();
+$field = $area = '';
+
+/**
+ * option type as dropdown.
+ */
+$optionTypeData == 'drop_down' ? $dropDown = 'selected' : '';
+/**
+ * option type as date time.
+ */
+$optionTypeData == 'date_time' ? $dateTime = 'selected' : '';
+
+/**
+ * Check option type is equal to drop down
+ * or option type is equal to radio
+ * or option type is equal to checkbox
+ * or option type is equal to multiple
+ * Get the values
+ */
+if ($optionTypeData == 'field' || $optionTypeData == 'area') {
+    $optionPrice = $optionPriceTypeData = $optionSkuVar = $optionMaxCharacters = '';
+    $optionPrice = round ( $o->getPrice (), 2 );
+    $optionPriceTypeData = $o->getPriceType ();
+    $optionSkuVar = $o->getSku ();
+    $optionMaxCharacters = $o->getMaxCharacters ();
+    ?>
+<table class="border form-list" cellpadding="0" cellspacing="0">
+ <tbody>
+  <tr class="headings">
+   <th class="type-price"><label><?php echo Mage::helper('marketplace')->__('Price'); ?></label></th>
+   <th class="type-type"><label><?php echo Mage::helper('marketplace')->__('Price Type'); ?></label></th>
+   <th class="type-sku"><label><?php echo Mage::helper('marketplace')->__('SKU'); ?></label></th>
+   <th class="type-last last"><label><?php echo Mage::helper('marketplace')->__('Max Characters'); ?></label></th>
+  </tr>
+  <tr>
+   <td><input type="text"
+    class="input-text validate-number product-option-price"
+    id="<?php echo 'product_option_' . $child_option_count_value . '_price'; ?>"
+    name="<?php  echo 'product[options][' . $child_option_count_value . '][price]'?>"
+    value="<?php echo $optionPrice; ?>"></td>
+   <td>
+
+                    <?php
+    $fixed = $percent = '';
+    if (isset ( $optionPriceTypeData ) && $optionPriceTypeData == 'fixed') {
+        $fixed = 'selected';
+    }
+    
+    if (isset ( $optionPriceTypeData ) && $optionPriceTypeData == 'percent') {
+        $percent = 'selected';
+    }
+    ?>
+                    <select
+    name="<?php echo 'product[options][' . $child_option_count_value . '][price_type]'; ?>"
+    id="<?php echo 'product_option_' . $child_option_count_value . '_price_type'; ?>"
+    class="select product-option-price-type" title="">
+     <option value="fixed" <?php echo $fixed; ?>>
+                    <?php echo $this->__('fixed'); ?></option>
+     <option value="percent" <?php echo $percent;  ?>>
+                    <?php echo $this->__('Percent'); ?></option>
+   </select>
+   </td>
+   <td><input type="text" class="input-text"
+    name="<?php echo 'product[options][' . $child_option_count_value . '][sku]'; ?>"
+    value="<?php echo $optionSkuVar; ?>"></td>
+   <td class="type-last last"><input type="text"
+    class="input-text validate-zero-or-greater"
+    name="<?php echo 'product[options][' . $child_option_count_value . '][max_characters]'; ?>"
+    value="<?php echo $optionMaxCharacters; ?>"></td>
+  </tr>
+ </tbody>
+</table>
+<?php
+$child_option_count_value = $child_option_count_value + 1;
+}
+$option_count = $option_count + 1;

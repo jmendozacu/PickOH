@@ -1,0 +1,116 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+<?php
+$orderEmailData = $this->orderEmailDataInformation();
+        $sellerIdsVal = array ();
+        /**
+         * Title for order products.
+         * display product quantity
+         * and display product amount
+         */
+        $displayProductQty = Mage::helper ( 'marketplace' )->__ ( 'Product QTY' );
+        $displayProductAmt = Mage::helper ( 'marketplace' )->__ ( 'Product Amount' );
+        $displayProductCommission = Mage::helper ( 'marketplace' )->__ ( 'Commission Fee' );
+        $displaySellerAmount = Mage::helper ( 'marketplace' )->__ ( 'Seller Amount' );
+        $displayProductName = Mage::helper ( 'marketplace' )->__ ( 'Product Name' );
+        /**
+         * Get order email data.
+         */
+        foreach ( $orderEmailData as $data ) {
+            $orderDetails = Mage::getModel('sales/order')->loadByIncrementId($data['increment_id']);
+            $j = 0;
+            foreach($orderDetails->getAllItems() as $item){
+                if($j == 0) {
+                    $options = $item->getProductOptions();
+                    $customOptions = $options['attributes_info'];
+                    $products = Mage::getModel('catalog/product')->load($data ['product_id']);
+                    $productTypee = $products->getTypeID();
+                    if($productTypee == 'configurable'){
+                        $attributeLabel =    $customOptions[0][label];
+                        $attributeValue = $customOptions[0][value];
+                        $j++;
+                    }
+                }
+            }
+            /**
+             * Check the seller id is not in the array of whole seller id
+             * if so add the seller id in seller ids array
+             */
+	$cancelOrderData=Mage::getSingleton('adminhtml/session')->getCancelOrderData();
+	$cancelOrderId=$cancelOrderData['sellerSessionId'];
+            if (! in_array ( $data ['seller_id'], $sellerIdsVal )&& $data ['seller_id']==$cancelOrderId) {
+                $sellerIdsVal [] = $data ['seller_id'];
+            }
+        }
+        foreach ( $sellerIdsVal as $id ) {
+            $totalProductAmt = $totalCommissionFee = $totalSellerAmt = 0; ?>
+            <table cellspacing="0" cellpadding="0" border="0" width="650" style="border:1px solid #eaeaea"><thead><tr>
+            <th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductName;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductQty;?></th>
+            <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductAmt;?></th><th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displayProductCommission;?></th>
+            <th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;"><?php echo $displaySellerAmount;?></th></tr></thead>
+            <tbody bgcolor="#F6F6F6">
+            <?php $currencySymbol = Mage::app ()->getLocale ()->currency ( Mage::app ()->getStore ()->getCurrentCurrencyCode () )->getSymbol ();
+            foreach ( $orderEmailData as $data ) {
+                if ($id == $data ['seller_id']) {
+                    $sellerId = $data ['seller_id'];
+                    $productId = $data ['product_id'];
+                    $product = Mage::helper ( 'marketplace/marketplace' )->getProductInfo ( $productId );
+                    $displayLabel = "";
+                    $productTypeId = $product->getTypeId();
+                    if($productTypeId == "simple"){
+                        $parentId= Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $productId );
+                    }
+                    if($productTypeId == "configurable"){
+                        $displayLabel = '<dl class="item-options"><dt>'.$attributeLabel.'  </dt><dd>'.$attributeValue.'</dd>';
+                    }
+                    if(!$parentId) {
+                    $groupId = Mage::helper ( 'marketplace' )->getGroupId ();
+                    $productGroupId = $product->getGroupId ();
+                    $productName = $product->getName (); ?>
+                    <tr>
+                    <td align="left" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $productName;?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $data ['product_qty'];?></td>
+                    <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . $data ['product_amt'];?></td><td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . $data ['commission_fee'];?></td>
+                    <td align="center" valign="top" style="font-size:11px;padding:3px 9px;border-bottom:1px dotted #cccccc;"><?php echo $currencySymbol . $data ['seller_amount'];?></td>
+                    <?php $totalProductAmt = $totalProductAmt + $data ['product_amt'];
+                    $totalCommissionFee = $totalCommissionFee + $data ['commission_fee'];
+                    $totalSellerAmt = $totalSellerAmt + $data ['seller_amount'];
+                    $incrementId = $data ['increment_id'];
+                    $customerEmail = $data ['customer_email'];
+                    $customerFirstname = $data ['customer_firstname']; ?>
+                    </tr>
+                    <?php }
+                }
+            }?>
+            </tbody><tfoot><tr><td colspan="4" align="right" style="padding:3px 9px">Commision Fee</td><td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . $totalCommissionFee;?></span></td> </tr> <tr> <td colspan="4" align="right" style="padding:3px 9px">Seller Amount</td> <td align="center" style="padding:3px 9px"><span><?php echo $currencySymbol . $totalSellerAmt;?></span></td>  </tr>
+                                <tr><td colspan="4" align="right" style="padding:3px 9px"><strong>Total Product Amount</strong></td><td align="center" style="padding:3px 9px"><strong><span><?php echo $currencySymbol . $totalProductAmt;?></span></strong></td> </tr></tfoot></table>
+           <?php
+        }
+    ?>

@@ -1,0 +1,238 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.1
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+
+?>
+<?php
+$products = $this->getProductCollection();
+$categoryCount = count ( $products );
+$coreHelper = $this->helper('core');
+ if ($categoryCount > 0){ ?> 
+  <h2 class="subtitle"><span><?php echo $this->__(' Todays Deals') ?></span><p>The best of global brands, at your doorstep!</p></h2>
+<?php
+
+/**
+ * Check the category count is greater than or equal to 1
+ */
+?>
+
+<div class="products-grid <?php 
+/**
+ * check the category count is greater than 4
+ * if so display as slider
+ * if not no slider will be displayed
+ */
+if($categoryCount>4){
+echo 'slider-carousel'; 
+} 
+else {
+echo 'no-slider'; 
+} ?>">
+<?php $increment =1; 
+foreach ( $products as $item ) {
+
+    			    $originalPrice = $item->getPrice(); 
+                    $discountPrice = $item->getSpecialPrice(); 
+                    $savings = $originalPrice - $discountPrice; 
+                    $savingsPercentage = round(($savings / $originalPrice) * 100, 0);
+
+?>
+
+<div class="slider <?php if($increment==4) {
+echo 'last';
+} ?>">
+
+<div class="product_image_div">
+                          <?php
+/**
+ * Display product image
+ */
+?>
+ <a href="<?php echo $item->getProductUrl() ?>" 
+ title="<?php echo $this->escapeHtml($item->getName()) ?>" class="product-image">
+                    <?php $_imgSize = 220; ?>
+                    <img src="<?php echo $this->helper('catalog/image')->init($item, 'small_image')->resize($_imgSize); ?>" 
+                    alt="<?php echo $this->stripTags($this->getImageLabel($item, 'small_image'), null, true) ?>" />
+</a>
+<h3 class="product-name">
+<a href="<?php echo $item->getProductUrl(); ?>">
+                       <?php echo $item->getName (); ?>
+ </a>
+</h3>
+<?php echo $RatingOb=Mage::getModel('rating/rating')->getEntitySummary($item->getId());
+     $ratings=$RatingOb->getSum()/$RatingOb->getCount();
+    ?>
+    
+    <div class="ratings">
+        <div class="rating-box">
+        <?php if($ratings): ?>
+            <div class="rating" style="width:<?php echo $ratings; ?>%"></div><?php endif; ?>
+        </div>
+    </div>
+
+ <div class="product-details">
+ <?php if(!empty($item->getSpecialPrice()) && ($item->getPrice() > $item->getSpecialPrice())){ ?>
+ <span class="original_price"> <?php echo $coreHelper->currency($item->getPrice(), true, false); ?></span>
+ <span class="offer_price"> <?php echo $coreHelper->currency($item->getSpecialPrice(), true, false); ?></span>
+                              
+<span class="discount_label"><?php echo $this->__('Discount: ') ?>  </span> 
+                                <span class="discount_price" <?php echo $this->getIdSuffix() ?>>
+                                      <?php echo '( '.$savingsPercentage. '% off )';?>
+                                </span>
+                                <div class="home-out-stock">
+                             <?php 
+							$isInStock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($item)->getIsInStock();
+							if($isInStock==0){
+								echo $this->__('Out of Stock');	
+							}
+                              ?>
+                                </div>
+                                <?php 
+                                
+                                $bestProductData= Mage::getModel('catalog/product')->load($item->getId());
+                                $newDealExpireDate= $bestProductData->getSpecialToDate();
+                                ?>
+                                <?php 
+                                
+                                $timerColor = Mage::getStoreConfig('superdeals/timer/text');
+$saveDisLableColor = Mage::getStoreConfig('superdeals/timer/save_dis_lable_color');
+$saveDisPriceColor = Mage::getStoreConfig('superdeals/timer/save_dis_price_color');
+$saveCatTimeFontSize = Mage::getStoreConfig('superdeals/timer/save_cat_time_font_size');
+
+if (!Mage::registry('timer_count')) {
+    $count = 1;
+    Mage::register('timer_count', $count);
+} else {
+    $count = Mage::registry('timer_count');
+    $count = $count + 1;
+    Mage::unregister('timer_count');
+    Mage::register('timer_count', $count);
+}
+?>
+<style type="text/css">
+        /* design for Category page */
+        .deal-price-box .price-label {color: #<?php echo $saveDisLableColor ?>; }
+        .deal-price-box .price {color: #<?php echo $saveDisPriceColor ?>; }
+        .dealtimer_listpage .dealtimer_listpage_timer span, .dealtimer_listpage .dealtimer_listpage_timer{ color: #<?php echo $timerColor ?>; font-size:<?php echo $saveCatTimeFontSize ?>px; }
+    </style>
+           <?php if(!empty($newDealExpireDate)){?>
+                              <div class="dealtimer_listpage">
+                              <div id="countboxes<?php echo $count; ?>"
+                              class="dealtimer_listpage_timer">
+                              </div>
+                              </div>
+                              <script type="text/javascript">
+                              var dthen<?php echo $count; ?> = new Date("<?php echo Date("m/d/y", strtotime($newDealExpireDate)) . ' 11:59:00 PM'; ?>");
+                                                                      start = "<?php echo Date("m/d/y h:i:s A", strtotime(Mage::app()->getLocale()->date(null, null, "en_US", true))); ?>";
+                                                                      startDate = Date.parse(start);
+                                                                      var dnow<?php echo $count; ?> = new Date(startDate);
+                                                                      if (CountStepper > 0)
+                                                                          ddiff = new Date((dnow<?php echo $count; ?>) - (dthen<?php echo $count; ?>));
+                                                                      else
+                                                                          ddiff = new Date((dthen<?php echo $count; ?>) - (dnow<?php echo $count; ?>));
+                                                                      gsecs<?php echo $count; ?> = Math.floor(ddiff.valueOf() / 1000);
+                                                                      var iid<?php echo $count; ?> = "countboxes<?php echo $count; ?>";
+                                                                      CountBack(gsecs<?php echo $count; ?>, iid<?php echo $count; ?>, <?php echo $count; ?>);
+                                                                      j++;
+                                                                          </script>
+                                                                          <?php $count = $count + 1; 
+                                }
+                              
+                              
+                              
+                                 }
+                                else{ ?>
+                                <span> 
+                                    <?php echo $coreHelper->currency($item->getPrice(), true, false); ?>
+                                </span> 
+                                <?php } ?> 
+                                
+                            </div>
+                         <?php 
+/**
+ * Display Add to cart,
+ * add to wishlist 
+ * and compare
+ */
+?>
+ <div class="actions">
+  <?php 
+if($item->isSaleable()){ ?>
+                       <?php                        /**
+                        * Check the product is saleable
+                        * if so then display the option add to cart
+                        * else show out of stock message
+                        */?>
+                        <button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="button btn-cart animated fadeIn" 
+                        onclick="setLocation('<?php echo Mage::helper('checkout/cart')->getAddUrl($item) ?>')">
+<span><span><?php echo $this->__('Add to Cart') ?></span></span>
+</button>
+                    <?php } 
+                    else {?>
+                        <p class="availability out-of-stock animated fadeIn">
+<span>
+<?php echo $this->__('Out of stock') ?></span>
+</p>
+                   <?php } ?>
+<ul class="add-to-links">
+<li>
+<a href="<?php echo $this->helper('wishlist')->getAddUrl($item) ?>"
+title="<?php echo $this->__('Add to Wishlist') ?>"
+class="link-wishlist animated fadeIn">
+<?php echo $this->__('Add to Wishlist') ?>
+</a>
+</li>
+<li>
+<span class="separator">|
+</span> 
+<a href="<?php echo Mage::helper('catalog/product_compare')->getAddUrl($item);?>" class="link-compare animated fadeIn" title="<?php echo $this->__('Add to Compare') ?>">
+<?php echo $this->__('Add to Compare');?>
+</a>
+</li>
+</ul>
+<a class="button-action"><span class="plus"></span></a></div>      
+<?php 
+/**
+ * Quick view of the product
+ * If quickview has been enabled in admin section show quick view
+ */
+if(Mage::getStoreConfig('quickview/general/enabled')){
+	?>
+                                <input type="hidden" name="appthaAjaxLoading" id="appthaAjaxLoading" value="<?php echo $this->getSkinUrl('facebox/loading.gif') ?>" />
+                                <input type="hidden" name="appthaAjaxClose" id="appthaAjaxClose" value="<?php echo $this->getSkinUrl('facebox/closelabel.png') ?>" />
+                                <a rel="facebox" href="<?php echo Mage::helper('quickview')->getQuickViewUrl($item->getId());?>">
+                                <span class="quickview"><span class="btn-quickview"><?php echo $this->__('Quick View')?></span></span>
+                                </a>
+                                <?php } ?>            
+<?php echo $this->helper('marketplace/marketplace')->getLabel($item);?>
+</div></div>
+<?php $increment++; 
+}?>
+</div>
+<?php } ?>

@@ -1,0 +1,168 @@
+
+  <div class="color_theme">
+        <a id="cpToggle" href="javascript:void(0);"></a>
+          <ul style="display:none;">
+          <li class="violet_clr">violet</li>
+          <li class="red_clr">red</li>
+          <li class="blue_clr">blue</li>
+          <li class="green_clr">green</li>
+          <li class="blk_clr">black</li>
+          </ul>
+        </div>
+        
+        
+      
+ <div class="footer-content">
+    <div class="footer-container">
+        <div class="footer">
+        <div class="block block-subscribe">
+    <div class="block-title">
+        <strong><span>Newsletter</span></strong>
+    </div>
+    <p>
+    Sign up to receive email updates on new product announcements, gift ideas, special promotions, sales and more.    </p>
+    <form action="http://pickoh.com/marketplace/newsletter/subscriber/new/?___SID=U" method="post" id="newsletter-validate-detail">
+        <div class="block-content">
+            <div class="form-subscribe-header">
+                <label for="newsletter">Sign Up for Our Newsletter:</label>
+            </div>
+            <div class="input-box">
+               <input type="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="mail@example.com" name="email" id="newsletter" title="Sign up for our newsletter" class="input-text required-entry validate-email" />
+            </div>
+            <div class="actions">
+                <button type="submit" title="Subscribe" class="button">
+                <span><span>Subscribe</span></span></button>
+            </div>
+        </div>
+    </form>
+    <script type="text/javascript">
+    //<![CDATA[
+        var newsletterSubscriberFormDetail = new VarienForm('newsletter-validate-detail');
+    //]]>
+    </script>
+</div>
+<div class="block block-list block-compare" style ="display: none">
+<div class="righttop" id="addClass" onclick="expandColapseCompareSection();"><span></span></div>
+<div class ="minimize" style ="display: none">
+
+ <div class="block-title">
+ 
+        <strong><span>My Compared Products                    </span></strong>
+    
+    </div>
+    <div class="block-content">
+    
+            <p class="empty">You have no items to compare.</p>
+        </div>
+	<div class="actions">
+			            <button type="button" title="Compare" class="button" 
+            onclick="popWin('http://pickoh.com/marketplace/catalog/product_compare/index/uenc/aHR0cDovL3BpY2tvaC5jb20vbWFya2V0cGxhY2Uv/?___SID=U','compare','top:0,left:0,width=820,height=600,resizable=yes,scrollbars=yes')">
+            <span><span>Compare</span></span></button>
+            <a href="javascript:void(0)" onclick='ajaxClear("http://pickoh.com/marketplace/catalog/product_compare/clear/uenc/aHR0cDovL3BpY2tvaC5jb20vbWFya2V0cGxhY2Uv/?___SID=U")'
+            onclick="return confirm('Are you sure you would like to remove all products from your comparison?');" title="Clear All" >
+            Clear All</a>
+        </div>
+</div>
+<div class ="add">
+    <div class="block-title">
+        <strong><span>My Compared Products                    </span></strong>
+        <a href="javascript:void(0)" onclick='ajaxClear("http://pickoh.com/marketplace/catalog/product_compare/clear/uenc/aHR0cDovL3BpY2tvaC5jb20vbWFya2V0cGxhY2Uv/?___SID=U")'
+            onclick="return confirm('Are you sure you would like to remove all products from your comparison?');" >
+            Clear All</a>
+    </div>
+    <div style="color:red"><div class="compare-success-message"></div></div>
+    <div class="block-content">
+            <p class="empty">You have no items to compare.</p>
+        </div>
+    </div>
+</div>
+<script>
+jQuery('.slider-images').bxSlider({
+	infiniteLoop:false,
+	hideControlOnEnd:true,
+    slideWidth: 220,
+    minSlides: 1,
+    maxSlides: 3,
+    moveSlides: 1,
+    slideMargin: 5
+  });
+
+		
+</script>
+           <p><div class="widget widget-static-block"></div>
+</p>
+<div class="links">
+<div class="block-title"><strong><span>Shopping With Us</span></strong></div>
+<ul>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uprivacy-policy"><span>icon</span>Privacy Policy</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Urefund/"><span>icon</span>Refund policy</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uterms-and-conditions/"><span>icon</span>Terms and Conditions</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uabout/"><span>icon</span>Frequently Asked Questions</a></li>
+</ul>
+</div>
+<div class="links">
+<div class="block-title"><strong><span>Your Account</span></strong></div>
+<ul>
+<li><a href="http://pickoh.com/marketplace/?___SID=Ucustomer/account/"><span>icon</span>Your Account</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uabout/"><span>icon</span>Personal Information</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Ucatalogsearch/term/popular/"><span>icon</span>Search Terms</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Ucatalogsearch/advanced/"><span>icon</span>Advanced Search</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Usales/guest/form/"><span>icon</span>Order History</a></li>
+</ul>
+</div>
+<div class="links">
+<div class="block-title"><strong><span>About Us</span></strong></div>
+<ul>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uabout/"><span>icon</span>About Us</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Ucontacts/"><span>icon</span>Contact Us</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Ucustomer-service/"><span>icon</span>Customer Service</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uprivacy-policy/"><span>icon</span>Partners</a></li>
+<li><a href="http://pickoh.com/marketplace/?___SID=Uterms-and-conditions"><span>icon</span>Careers</a></li>
+</ul>
+</div>
+<div class="block">
+<div class="block-title"><strong><span>Social Links</span></strong></div>
+<ul>
+<li class="you-tube"><a href="https://www.youtube.com/user/appthaextensions" target="_blank">youtube</a></li>
+<li class="facebook"><a href="https://www.facebook.com/apptha" target="_blank">fb</a></li>
+<li class="twitter"><a href="https://twitter.com/apptha" target="_blank">twit</a></li>
+<li class="google-plus"><a href="https://plus.google.com/+Apptha" target="_blank">googleplus</a></li>
+</ul>
+<div class="block-title"><strong><span>Payment Method</span></strong></div>
+<div class="payment-method"><img alt="" src="http://pickoh.com/marketplace/media/wysiwyg/superstore/payment-method.png" /></div>
+</div> 
+        </div>
+        <div class="footer-middle">
+                    </div>
+    </div>
+        <div class="footer-bottom">
+    <div class="footer-inner">
+        <address class="copyright">&copy; 2017 Magento Demo Store. All Rights Reserved.</address>
+         <address>&copy; 2017 Magento Demo Store. All Rights Reserved. </address>
+                </div>
+    </div>
+        </div>
+<div id="back_top"></div>
+
+<script type="text/javascript">
+document.observe('click', function(e, el) {
+    if ( ! e.target.descendantOf('header-minicart')) {  
+    if($('header-cart').hasClassName('skip-active')){
+    $('header-cart').removeClassName('skip-active');
+    }  
+    }
+});
+
+jQuery(function() {
+    jQuery(window).scroll(function() {
+    if(jQuery(this).scrollTop() > 300) {
+        jQuery('#back_top').fadeIn();    
+    } else {
+        jQuery('#back_top').fadeOut();
+    }
+});
+   jQuery('#back_top').click(function() {
+    jQuery('body,html').animate({scrollTop:0},500);
+});    
+});
+</script>

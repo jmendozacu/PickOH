@@ -1,0 +1,12 @@
+<?php ?>
+<script type="text/javascript">
+function checkcartProducts(){
+	var checkSellerProduct = '<?php echo Mage::helper ( 'marketplace/common' )->checkSellerProduct();?>';
+	 if(checkSellerProduct == ''){
+		 alert('Seller can\'t buy their own product.');
+		 return false;
+	 }
+	 review.save();
+	 return true;
+}
+</script>

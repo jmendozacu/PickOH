@@ -1,0 +1,247 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+?>
+ <?php
+/**
+ * Check the product custom options is equal to 1
+ */
+ $select_sub_option_count = '';
+ $optionCount = $selectSubOptionCount = 0;
+ $option_count = '';
+
+$product_custom_options_enable = 0;
+$product_custom_options_enable = Mage::helper ( 'marketplace' )->getPrdouctCustomOptions ();
+
+/**
+ * Initilize product id
+ */
+$productId = $this->getRequest ()->getParam ( 'id' );
+$storeId = Mage::app()->getStore()->getStoreId();
+/**
+ * Checking product id is not equal to empty
+ * Initilize product data
+*/
+if (! empty ( $productId )) {
+$product = $this->getProductData ($productId,$storeId);
+}
+
+if ($product_custom_options_enable == 1) { ?>
+    <div class="fieldset marketplace-custom-option">
+<h2 class="legend"><?php echo $this->__('Custom Options'); ?></h2>
+<!-- Custom option add button -->
+<div class="right" id="marketplace_custom_option">
+<button id="marketplace_new_custom_option" class="button" type="button" onclick="addMarketPlaceCustomOption()">
+<span><span><?php
+/**
+ * Give provision to add new
+ */
+echo $this->__('Add New Option'); ?></span></span>
+</button>
+</div>
+<div class="clear"></div>
+<!-- Displaying All options list -->
+<!-- Marketplace custom option container -->
+<div id="marketplace_custom_option_list" class="marketplace_custom_option_list">
+            <?php
+            /**
+             * Display product custom option, If it's exist
+             * Assign the option count, child option count
+             */
+
+        $option_count = 1;
+        $child_option_count_value = 1;
+        $select_sub_option_count = 0;
+        $product_options = array ();
+        /**
+         * Get Product options
+         */
+        $product_options = $product->getOptions ();
+        /**
+         * Check the product options is not empty
+         * if it is get the value of
+         * option title
+         * option type
+         * option is require value
+         * option sort order
+         */
+        if (! (empty ( $product_options ))) {
+            foreach ( $product_options as $o ) {
+                if ($o->getIsDelete () != 1) {
+                    $optionTitle = $optionTypeData = $optionIsRequire = $optionSortOrder = '';
+                    $optionTitle = $o->getTitle ();
+                    $optionTypeData = $o->getType ();
+                    $optionIsRequire = $o->getIsRequire ();
+                    $optionSortOrder = $o->getSortOrder ();
+                    ?>
+                <div class="dont-remove market_place_option-box">
+<!-- Div for removing custom option -->
+<table id="product_option_<?php echo $option_count; ?>"
+class="option-header form-list" cellpadding="0" cellspacing="0">
+<input type="hidden" id="product_option_<?php echo $option_count; ?>_is_delete" name="product[options][<?php echo $option_count; ?>][is_delete]" value="">
+<input type="hidden" id="product_option_<?php echo $option_count; ?>_previous_type" name="product[options][<?php echo $option_count;?>][previous_type]" value="">
+<input type="hidden" id="product_option_<?php echo $option_count; ?>_previous_group" name="product[options][<?php echo $option_count;?>][previous_group]" value="">
+<input type="hidden" id="product_option_<?php echo $option_count; ?>_id" name="product[options][<?php echo $option_count;?>][id]" value="<?php echo $option_count;?>">
+<input type="hidden" id="product_option_<?php echo $option_count; ?>_option_id" name="product[options][<?php echo $option_count; ?>][option_id]" value="0">
+<thead>
+<tr>
+<th class="opt-title"><label class="required"><em>*</em> <?php
+/**
+ * Display Title
+ */
+echo $this->__('Title'); ?></label></th>
+<th class="opt-type"><label class="required"><em>*</em> <?php
+/**
+ * Display Input type
+ */
+echo $this->__('Input Type'); ?></label></th>
+<th class="opt-req"><label><?php echo $this->__('Is Required'); ?></label></th>
+<th class="opt-order"><label><?php echo $this->__('Sort Order'); ?></label></th>
+<th class="a-right"><button id="delete_product_option_<?php echo $option_count; ?>" title="<?php echo $this->__ ( 'Delete Option' );?>"
+type="button" class="button scalable delete delete-product-option " onclick="removeMarketPlaceCustomOption(this)" style="">
+<span><span><?php echo $this->__('Delete Option'); ?></span></span>
+</button></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><input type="text" class="required-entry input-text" id="product_option_<?php echo $option_count; ?>_title" name="product[options][<?php echo $option_count; ?>][title]" value="<?php  echo (! empty ( $optionTitle ))? $optionTitle:''; ?>"></td>
+<td>
+<?php
+$field = $area = $file = $dropDown = $radio = $checkbox = $multiple = $date = $dateTime = $time = '';
+/**
+ * option type as field.
+ */
+$selectedoption=$this->selectedOption($optionTypeData);
+$$selectedoption='selected';
+/**
+ * option type as dropdown.
+ */
+ $optionTypeData == 'drop_down'?$dropDown = 'selected':'';
+/**
+ * option type as date time.
+ */
+ $optionTypeData == 'date_time'?$dateTime = 'selected':'';
+
+
+?>
+<select onchange="changeMarketPlaceCustomOption(this,<?php echo $option_count; ?>)" name="product[options][<?php echo $option_count;?>][type]" id="product_option_<?php echo $option_count;?>_type" class="select validate-select" title="">
+<option value="">-- <?php echo $this->__('Please select'); ?> --</option>
+<optgroup label="<?php echo $this->__('Text'); ?>">
+<option value="field"<?php echo $field;?>><?php echo $this->__('Field'); ?></option>
+<option value="area"<?php echo $area; ?>><?php echo $this->__('Area'); ?></option>
+</optgroup>
+<optgroup label="<?php echo $this->__('File'); ?>">
+<option value="file"<?php echo $file;  ?>>
+<?php echo $this->__('File'); ?></option>
+</optgroup>
+<optgroup label="<?php echo $this->__('Select'); ?>">
+<option value="drop_down"<?php echo $dropDown;  ?>><?php echo $this->__('Drop-down'); ?></option>
+<option value="radio"<?php echo $radio;  ?>><?php echo $this->__('Radio Buttons'); ?></option>
+<option value="checkbox"<?php echo $checkbox;  ?>><?php echo $this->__('Checkbox'); ?></option>
+<option value="multiple"<?php echo $multiple;  ?>><?php echo $this->__('Multiple Select'); ?></option>
+</optgroup>
+<optgroup label="<?php echo $this->__('Date'); ?>">
+<option value="date"<?php echo $date;  ?>><?php echo $this->__('Date'); ?></option>
+<option value="date_time"<?php echo $dateTime;  ?>><?php echo $this->__('Date'); ?> &amp; <?php echo $this->__ ( 'Time' );?></option>
+<option value="time"
+<?php echo $time;  ?>>
+<?php echo $this->__('Time'); ?></option>
+</optgroup>
+</select></td>
+<td class="opt-req"><select name="product[options][<?php echo $option_count; ?>][is_require]" id="product_option_<?php echo $option_count;?>_is_require" class="select" title="">
+<option value="1"<?php echo ($optionIsRequire == 1)?'selected':'';?>><?php echo $this->__('Yes'); ?></option>
+<option value="0"<?php echo ($optionIsRequire == 0)?'selected':''; ?>><?php echo $this->__('No'); ?></option>
+</select></td>
+ <td>
+   <input type="text" class="validate-zero-or-greater input-text" name="product[options][<?php echo $option_count; ?>][sort_order]" value="<?php echo $optionSortOrder; ?>">
+</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+                    <?php
+                    /**
+                     * Check option type is equal to drop down
+                     * or option type is equal to radio
+                     * or option type is equal to checkbox
+                     * or option type is equal to multiple
+                     * Get the values
+                     */
+                    echo $this->getLayout()->createBlock('marketplace/product_edit')->setSelectInfo($o)->setTemplate('marketplace/product/edit_customoption_select.phtml')->toHtml();
+                    /**
+                     * Check option type is equal to field
+                     * or option type is equal to area
+                     * Get option price
+                     * Get option price type
+                     * Get option sku
+                     * Get option maximum characters
+                     */
+                    echo $this->getLayout()->createBlock('marketplace/product_edit')->setTextInfo($o)->setTemplate('marketplace/product/edit_customoption_text.phtml')->toHtml();
+                    /**
+                     * Check option type is equal to file
+                     * If it is Define empty variables like
+                     * option price, option price type, option sky, option file extension, option image sizex
+                     */
+                     echo $this->getLayout()->createBlock('marketplace/product_edit')->setFileInfo($o)->setTemplate('marketplace/product/edit_customoption_file.phtml')->toHtml();
+                    /**
+                     * checking option type is equal to date
+                     * or option type is equal to date_time
+                     * or option type is equal to time
+                     * Get values of option price, option price type, option sku
+                     */
+                     echo $this->getLayout()->createBlock('marketplace/product_edit')->setDateInfo($o)->setTemplate('marketplace/product/edit_customoption_date.phtml')->toHtml();
+                    $option_count = $option_count + 1;
+                    ?>
+<!-- Div for removing custom option -->
+</div>
+    <?php
+                }
+            }
+        }
+        ?>
+<!-- End marketplace custom option container -->
+</div>
+</div>
+<?php
+}
+/**
+ * End if for checking whether product option enabled or not
+ */
+ ?>
+<script type="text/javascript" >
+var customOptionCount = <?php echo $option_count ?>;
+var selectSubChildCustomOptionCount = <?php echo $select_sub_option_count ?>;
+function addMarketPlaceCustomOption() {
+    var html = $("marketplace_custom_option_YYY").innerHTML.replace(/CO/g, customOptionCount);
+    var new_html = html.replace(/YYY/g, customOptionCount);
+    $("marketplace_custom_option_list").insert(new_html);
+    customOptionCount = customOptionCount + 1;
+}
+</script>

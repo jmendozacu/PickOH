@@ -1,0 +1,19 @@
+<?php if ($this->isEnabled()): ?>
+    <div class="actions-toolbar social-btn linkedin-login">
+        <div class="primary">
+            <button class="action" id="btn_linkedin_login" type="button">
+                <span>
+                    <span><?php echo $this->__('Linkedin Sign In') ?></span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <script>
+        var linkedinPopup = new SocialLoginPopup({
+            url: '<?php echo $this->getLoginUrl()?>',
+            title: '<?php echo $this->__('Login By Linkedin')?>',
+            btnElement: 'btn_linkedin_login'
+        });
+    </script>
+<?php endif; ?>
+

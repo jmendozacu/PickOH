@@ -1,0 +1,66 @@
+<?php
+/**
+ * Magecheckout_SocialLogin extension
+ *                     NOTICE OF LICENSE
+ *
+ *                     This source file is subject to the MIT License
+ *                     that is bundled with this package in the file LICENSE.txt.
+ *                     It is also available through the world-wide-web at this URL:
+ *                     http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Magecheckout
+ * @package   Magecheckout_SocialLogin
+ * @copyright Copyright (c) 2015
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<div class="social-login block-container forgot" style="display:none">
+    <div class="social-login-title">
+        <h2 class="forgot-pass-title">
+            <?php echo $this->__('Forgot Password') ?>
+        </h2>
+    </div>
+    <div class="block col-mg mg-12">
+        <div class="block-content">
+            <form class="form-password-forget"
+                  id="social-form-password-forget">
+                <fieldset class="fieldset" data-hasrequired="<?php /* @escapeNotVerified */
+                echo __('* Required Fields') ?>">
+                    <ul class="form-list">
+                        <li class="fields">
+                            <div class="field note"><?php /* @escapeNotVerified */
+                                echo __('Please enter your email address below to receive a password reset link.'); ?></div>
+                            <div class="field email required">
+                                <label for="email_address" class="label"><span><?php /* @escapeNotVerified */
+                                        echo __('Email') ?></span></label>
+
+                                <div class="control">
+                                    <input type="email" name="email" alt="email" id="email_address" class="input-text"
+                                           value="<?php echo $this->escapeHtml($this->getEmailValue()) ?>"
+                                           data-validate="{required:true, 'validate-email':true}">
+                                </div>
+                            </div>
+                            <?php echo $this->getChildHtml('form_additional_info'); ?>
+                            <?php echo $this->getChildHtml('forgot.captcha'); ?>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <div class="actions-toolbar">
+                                <div class="primary">
+                                    <button type="button"
+                                            class="button action send primary"><span><?php /* @escapeNotVerified */
+                                            echo $this->__('Submit') ?></span></button>
+                                </div>
+                                <div class="secondary">
+                                    <a class="action back" href="#"><span><?php /* @escapeNotVerified */
+                                            echo $this->__('Go back') ?></span></a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

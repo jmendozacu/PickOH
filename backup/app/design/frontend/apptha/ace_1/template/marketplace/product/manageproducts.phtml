@@ -1,0 +1,98 @@
+<?php
+/**
+ * Apptha
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.apptha.com/LICENSE.txt
+ *
+ * ==============================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * ==============================================================
+ * This package designed for Magento COMMUNITY edition
+ * Apptha does not guarantee correct work of this extension
+ * on any other Magento edition except Magento COMMUNITY edition.
+ * Apptha does not provide extension support in case of
+ * incorrect edition usage.
+ * ==============================================================
+ *
+ * @category    Apptha
+ * @package     Apptha_Marketplace
+ * @version     1.9.2
+ * @author      Apptha Team <developers@contus.in>
+ * @copyright   Copyright (c) 2016 Apptha. (http://www.apptha.com)
+ * @license     http://www.apptha.com/LICENSE.txt
+ *
+ */
+$entityType = $this->getProductTypeId();
+$attributeSetCollection = $this->setEntityType($entityType);
+?>
+<h4><a href="javascript:void(0)" onclick="showConfigurablePorductAttributeList();"><?php echo Mage::helper('marketplace')->__('Click and refer the list of attributes for Importing the Configurable Product').'.'; ?></a></h4>
+<div id="configurable_product_attributes_list" class="configurable_product_attributes_list" style="display: none;">
+<?php
+        $configAttributeFlag = 0;
+        foreach ( $attributeSetCollection as $attributeSet ) {
+            $configAttributeFlag = 1;
+            $attributeSetName = $attributeSet->getAttributeSetName ();
+            $attributeSetId = $attributeSet->getAttributeSetId ();
+            $product = Mage::getSingleton ( "catalog/product" )->setTypeId ( 'configurable' )->setAttributeSetId ( $attributeSetId );
+            $attributes = $product->getTypeInstance ( true )->getSetAttributes ( $product );
+?>
+<div class="sample_data_for_configurable_product">
+<b class="attribute_heading"><?php echo Mage::helper('marketplace')->__('Attribute Set for').' "'.$attributeSetName.'" :'; ?></b>
+<ul>
+<?php
+$attributeFlag = 0;
+            foreach ( $attributes as $attribute ) {
+                if (($attribute->getIsConfigurable ()) && ($attribute->getIsVisible ()) && ($attribute->usesSource ()) && ($attribute->getIsGlobal () == Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL)) {
+                    $attributeCodeValueForDisplay = $this->__ ( 'Attribute Code' );
+                    if ($attribute->getName () != 'setbanner' && $attribute->getName () != 'default_country' && $attribute->getName () != 'seller_shipping_option' && $attribute->getName () != 'productstatus') {
+                        $attributeFlag = 1;
+?>
+<li><b><?php echo $attributeCodeValueForDisplay.' : '; ?></b><br/>
+<?php echo $attribute->getAttributeCode(); ?><br/>
+<b><?php echo $this->__('Options').' : '; ?></b>
+<?php
+                        $attributeDetails = Mage::getSingleton ( "eav/config" )->getAttribute ( "catalog_product", $attribute->getAttributeCode () );
+                        $options = $attributeDetails->getSource ()->getAllOptions ( false );
+                         echo $this->getChildHtml('marketplace_manageproducts_configurable');
+/**
+ * Check options count is less than 1
+ * if so display 'no option available' message
+ */
+?>
+<input type="hidden" name="configurable_attribute[]" value="<?php echo $attribute->getAttributeCode(); ?>">
+</li>
+<?php
+}
+}
+}
+/**
+ * Check attribute flag is equal to zero
+ * if so display 'no confugurable attribute available for' message
+ */
+if($attributeFlag == 0){ ?>
+<li><?php echo Mage::helper('marketplace')->__('No configurable attribute available for').' "'.$attributeSetName.'".'; ?>
+</li>
+</ul>
+<?php
+} ?>
+</div>
+<?php
+}
+?>
+<?php
+/**
+ * Checking config attribute flag is equal to zero
+ * if so display 'no attribute set available' message
+ */
+if($configAttributeFlag == 0){ ?>
+<div>
+<?php echo Mage::helper('marketplace')->__('No attribute set available for configurable product').'.'; ?>
+</div>
+<?php }
+?>
+</div>

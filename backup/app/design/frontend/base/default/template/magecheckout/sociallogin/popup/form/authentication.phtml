@@ -1,0 +1,101 @@
+<?php
+/**
+ * Magecheckout_SocialLogin extension
+ *                     NOTICE OF LICENSE
+ *
+ *                     This source file is subject to the MIT License
+ *                     that is bundled with this package in the file LICENSE.txt.
+ *                     It is also available through the world-wide-web at this URL:
+ *                     http://opensource.org/licenses/mit-license.php
+ *
+ * @category  Magecheckout
+ * @package   Magecheckout_SocialLogin
+ * @copyright Copyright (c) 2015
+ * @license   http://opensource.org/licenses/mit-license.php MIT License
+ */
+?>
+<div class="social-login block-container authentication">
+    <div class="social-login-title">
+        <h2 class="login-title">
+            <?php echo $this->__('Sign In') ?>
+        </h2>
+    </div>
+    <?php echo $this->getMessagesBlock()->toHtml() ?>
+    <div class="block social-login-customer-authentication col-mg mg-7">
+        <div class="block-title">
+            <span id="block-customer-login-heading" role="heading" aria-level="2"><?php /* @escapeNotVerified */
+                echo $this->__('Registered Customers') ?></span>
+        </div>
+        <div class="block-content" aria-labelledby="block-customer-login-heading">
+            <form class="form-customer-login"
+                  id="social-form-login"
+                  data-mage-init='{"validation":{}}'>
+
+                <?php echo $this->getBlockHtml('formkey'); ?>
+                <fieldset class="fieldset login" data-hasrequired="<?php /* @escapeNotVerified */
+                echo $this->__('* Required Fields') ?>">
+                    <ul class="form-list">
+                        <li class="fields">
+                            <div class="field email required">
+                                <label class="label" for="email"><span><?php /* @escapeNotVerified */
+                                        echo $this->__('Email') ?></span></label>
+
+                                <div class="control">
+                                    <input name="username"
+                                           value="<?php echo $this->escapeHtml($this->getUsername()) ?>"
+                                           id="email" class="input-text required-entry validate-email" title="<?php
+                                    echo $this->__('Email') ?>">
+                                </div>
+                            </div>
+                            <div class="field password required">
+                                <label for="pass" class="label"><span><?php /* @escapeNotVerified */
+                                        echo $this->__('Password') ?></span></label>
+
+                                <div class="control">
+                                    <input name="password"
+                                           type="password"
+                                           class="input-text required-entry validate-password" id="pass"
+                                           title="<?php /* @escapeNotVerified */
+                                           echo $this->__('Password') ?>">
+                                </div>
+                            </div>
+                            <?php echo $this->getChildHtml('form.additional.info'); ?>
+                            <?php echo $this->getChildHtml('login.captcha') ?>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <div class="actions-toolbar">
+                                <div class="primary">
+                                    <button type="button" class="button login primary"
+                                            id="bnt-social-login-authentication">
+                            <span><span><?php
+                                    echo $this->__('Login') ?></span></span></button>
+                                </div>
+                                <div class="secondary"><a class="action remind" href="#"><span><?php
+                                            echo $this->__('Forgot Your Password?') ?></span></a></div>
+                            </div>
+                            <div class="actions-toolbar">
+                                <div class="primary"><a class="action create" href="#"><span><?php
+                                            echo $this->__('Create New Account?') ?></span></a></div>
+                            </div>
+                        </li>
+                    </ul>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div class="block social-login-authentication-channel col-mg mg-5">
+        <div class="block-title">
+            <?php echo $this->__('Or Sign In With') ?>
+        </div>
+        <div class="block-content">
+            <?php echo $this->getChildHtml('popup.authentication.facebook') ?>
+            <?php echo $this->getChildHtml('popup.authentication.google') ?>
+            <?php echo $this->getChildHtml('popup.authentication.twitter') ?>
+            <?php echo $this->getChildHtml('popup.authentication.linkedin') ?>
+            <?php echo $this->getChildHtml('popup.authentication.instagram') ?>
+        </div>
+    </div>
+</div>
+
